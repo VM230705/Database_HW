@@ -54,6 +54,44 @@
 	<script src="js/respond.min.js"></script>
 	<![endif]-->
 
+	<!--Name validation-->
+	<script>
+		function check_name (uname){
+			if (uname != ""){
+				// flush field
+				document.getElementById("name_check_msg").innerHTML = "";
+				let xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function (){
+					let message;
+					// on status code 200
+					if (this.readyState == 4 && this.status == 200){
+						switch (this.responseText) {
+							case 'YES':
+								message = "This user name is available";
+								break;
+							case 'NO':
+								message = "This user name is not available";
+								break;
+							default:
+								message = "There is something wrong QAQ.";
+								message = this.responseText
+								break;
+						}
+						document.getElementById("name_check_msg").innerHTML = message;
+					}
+				}
+
+				// AJAX
+				xhttp.open("POST", "php_ajax/check_name.php", true);
+				xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				xhttp.send("uname="+uname);
+			}
+			else{
+				document.getElementById("name_check_msg").innerHTML = "This field can't be empty !!";
+			}
+		}
+	</script>
+
 	</head>
 	<body>
 	
@@ -71,31 +109,32 @@
 						</div> -->
 						<div class="form-group">
 							<label for="name" class="sr-only">Name</label>
-							<input type="text" class="form-control" id="name" placeholder="Name" autocomplete="off">
+							<input type="text" class="form-control" id="name" name="name" placeholder="Name" autocomplete="off" oninput="check_name(this.value);">
+							<label for="name" id="name_check_msg" style="color: red;"></label>
 						</div>
 						<div class="form-group">
 							<label for="name" class="sr-only">phonenumber</label>
-							<input type="text" class="form-control" id="phonenumber" placeholder="PhoneNumber" autocomplete="off">
+							<input type="text" class="form-control" id="phonenumber" name="phonenumber" placeholder="PhoneNumber" autocomplete="off">
 						</div>
 						<div class="form-group">
 							<label for="Account" class="sr-only">Account</label>
-							<input type="text" class="form-control" id="Account" placeholder="Account" autocomplete="off">
+							<input type="text" class="form-control" id="Account" name="account" placeholder="Account" autocomplete="off">
 						</div>
 						<div class="form-group">
 							<label for="password" class="sr-only">Password</label>
-							<input type="password" class="form-control" id="password" placeholder="Password" autocomplete="off">
+							<input type="password" class="form-control" id="password" name="password" placeholder="Password" autocomplete="off">
 						</div>
 						<div class="form-group">
 							<label for="re-password" class="sr-only">Re-type Password</label>
-							<input type="password" class="form-control" id="re-password" placeholder="Re-type Password" autocomplete="off">
+							<input type="password" class="form-control" id="re-password" name="re-password" placeholder="Re-type Password" autocomplete="off">
 						</div>
 						<div class="form-group">
 							<label for="latitude" class="sr-only">latitude</label>
-							<input type="text" class="form-control" id="latitude" placeholder="Latitude" autocomplete="off">
+							<input type="text" class="form-control" id="latitude" name="latitude" placeholder="Latitude" autocomplete="off">
 						</div>
 						<div class="form-group">
 							<label for="longitude" class="sr-only">longitude</label>
-							<input type="text" class="form-control" id="longitude" placeholder="longitude" autocomplete="off">
+							<input type="text" class="form-control" id="longitude" name="longitude" placeholder="longitude" autocomplete="off">
 						</div>
 				
 						<div class="form-group">
