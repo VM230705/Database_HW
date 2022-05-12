@@ -9,7 +9,7 @@ function check_name (uname){
             if (this.readyState == 4 && this.status == 200){
                 switch (this.responseText) {
                     case 'YES':
-                        message = "available account";
+                        message = "unused account name";
                         break;
                     case 'NO':
                         message = "This account is not available";
