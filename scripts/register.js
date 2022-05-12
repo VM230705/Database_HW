@@ -15,7 +15,7 @@ function register(){
                 switch (this.responseText){
                     case 'Success':
                         message = "註冊成功";
-                        window.location.href = "index.html";
+                        window.location.href = "index.php";
                         break;
                     case 'Exist':
                         message = "帳號已被註冊";

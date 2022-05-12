@@ -1,3 +1,14 @@
+<?php
+	// start session
+	session_start();
+
+	// check if logged in, then redirect
+	if (isset($_SESSION['logged']) && $_SESSION['logged'] == true){
+		header ("location: nav.html");
+		exit;
+	}
+?>
+
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -47,6 +58,7 @@
 	<link rel="stylesheet" href="css/animate.css">
 	<link rel="stylesheet" href="css/style.css">
 
+
 	<!-- Modernizr JS -->
 	<script src="js/modernizr-2.6.2.min.js"></script>
 	<!-- FOR IE9 below -->
@@ -54,77 +66,36 @@
 	<script src="js/respond.min.js"></script>
 	<![endif]-->
 
-	<!--Name validation-->
-	<script src="scripts/check_name.js"></script>
-	<script src="scripts/check_form.js"></script>
-	<script src="scripts/register.js"></script>
-	<script>
-		// check form information and submit
-		function submit_backend(){
-			if (check_form() == true){
-				register();
-			}
-			return false;
-		}
-	</script>
+	<!--For login-->
+	<script src="scripts/login.js"></script>
 
 	</head>
 	<body>
-	
-		<div class="container">
+
 		
+		<div class="container">
 			<div class="row">
 				<div class="col-md-4 col-md-offset-4">
+					
 
 					<!-- Start Sign In Form -->
-					<form action="#" class="fh5co-form animate-box" data-animate-effect="fadeIn" onsubmit="return submit_backend();">
-						<h2>Sign Up</h2>
-						<!-- <div class="form-group">
-							<div class="alert alert-success" role="alert">Your info has been saved.</div>
-						</div> -->
-						<div class="form-group">
-							<label for="name" class="sr-only">Name</label>
-							<input type="text" class="form-control" id="name" name="name" placeholder="Name" autocomplete="off"">
-							<label for="name" id="name_check_msg" style="color: red;"></label>
-						</div>
-						<div class="form-group">
-							<label for="phonenumber" class="sr-only">phonenumber</label>
-							<input type="text" class="form-control" id="phonenumber" name="phonenumber" placeholder="PhoneNumber" autocomplete="off">
-							<label for="phonenumber" id="phone_check_msg" style="color: red;"></label>
-						</div>
+					<form action="php/login.php" class="fh5co-form animate-box" data-animate-effect="fadeIn">
+						<h2>Sign In</h2>
 						<div class="form-group">
 							<label for="Account" class="sr-only">Account</label>
-							<input type="text" class="form-control" id="Account" name="account" placeholder="Account" autocomplete="off" oninput="check_name(this.value);">
-							<label for="Account" id="account_check_msg" style="color: red;"></label>
+							<input type="text" class="form-control" id="Account" name="account" placeholder="Account" autocomplete="off">
 						</div>
 						<div class="form-group">
 							<label for="password" class="sr-only">Password</label>
 							<input type="password" class="form-control" id="password" name="password" placeholder="Password" autocomplete="off">
-							<label for="password" id="passwd_check_msg" style="color: red;"></label>
-						</div>
-						<div class="form-group">
-							<label for="re-password" class="sr-only">Re-type Password</label>
-							<input type="password" class="form-control" id="re-password" name="re-password" placeholder="Re-type Password" autocomplete="off">
-							<label for="re-password" id="retype_check_msg" style="color: red;"></label>
-						</div>
-						<div class="form-group">
-							<label for="latitude" class="sr-only">latitude</label>
-							<input type="text" class="form-control" id="latitude" name="latitude" placeholder="Latitude" autocomplete="off">
-							<label for="latitude" id="latitude_check_msg" style="color: red;"></label>
-						</div>
-						<div class="form-group">
-							<label for="longitude" class="sr-only">longitude</label>
-							<input type="text" class="form-control" id="longitude" name="longitude" placeholder="longitude" autocomplete="off">
-							<label for="longitude" id="longitude_check_msg" style="color: red;"></label>
 						</div>
 				
 						<div class="form-group">
-							<p>Already registered? <a href="index.php">Sign In</a></p>
+							<p>Not registered? <a href="sign-up.html">Sign Up</a> </p>
 						</div>
 						<div class="form-group">
-							<input type="submit" value="Sign Up" class="btn btn-primary">
+							<input type="submit" value="Sign In" class="btn btn-primary">
 						</div>
-						
 					</form>
 					<!-- END Sign In Form -->
 
@@ -145,6 +116,9 @@
 	<script src="js/jquery.waypoints.min.js"></script>
 	<!-- Main JS -->
 	<script src="js/main.js"></script>
+
+
+
 
 	</body>
 </html>
