@@ -57,6 +57,19 @@
 	<!--Name validation-->
 	<script src="scripts/check_name.js"></script>
 	<script src="scripts/check_form.js"></script>
+	<script src="scripts/register.js"></script>
+	<script>
+		// check form information and submit
+		function submit_backend(){
+			if (check_form() == true){
+				register();
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+	</script>
 
 	</head>
 	<body>
@@ -65,17 +78,16 @@
 		
 			<div class="row">
 				<div class="col-md-4 col-md-offset-4">
-					
 
 					<!-- Start Sign In Form -->
-					<form action="#" class="fh5co-form animate-box" data-animate-effect="fadeIn" onsubmit="return check_form()">
+					<form action="#" class="fh5co-form animate-box" data-animate-effect="fadeIn" onsubmit="return submit_backend();">
 						<h2>Sign Up</h2>
 						<!-- <div class="form-group">
 							<div class="alert alert-success" role="alert">Your info has been saved.</div>
 						</div> -->
 						<div class="form-group">
 							<label for="name" class="sr-only">Name</label>
-							<input type="text" class="form-control" id="name" name="name" placeholder="Name" autocomplete="off" oninput="check_name(this.value);">
+							<input type="text" class="form-control" id="name" name="name" placeholder="Name" autocomplete="off"">
 							<label for="name" id="name_check_msg" style="color: red;"></label>
 						</div>
 						<div class="form-group">
@@ -85,7 +97,7 @@
 						</div>
 						<div class="form-group">
 							<label for="Account" class="sr-only">Account</label>
-							<input type="text" class="form-control" id="Account" name="account" placeholder="Account" autocomplete="off">
+							<input type="text" class="form-control" id="Account" name="account" placeholder="Account" autocomplete="off" oninput="check_name(this.value);">
 							<label for="Account" id="account_check_msg" style="color: red;"></label>
 						</div>
 						<div class="form-group">

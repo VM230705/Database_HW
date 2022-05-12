@@ -84,7 +84,6 @@ function check_form(){
         valid = false;
     }
 
-
     if (!valid){
         return false;
     }

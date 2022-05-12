@@ -10,8 +10,8 @@ try {
     $conn = require_once "../db_account/config.php";
 
     // query
-    $stmt=$conn->prepare("select name from user where name=:username");
-    $stmt->execute(array('username' => $uname));
+    $stmt=$conn->prepare("select account from user where account=:useraccount");
+    $stmt->execute(array('useraccount' => $uname));
 
     if ($stmt->rowCount() == 0){
         echo 'YES';
