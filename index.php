@@ -2,11 +2,12 @@
 	// start session
 	session_start();
 
-	// check if logged in, then redirect
-	if (isset($_SESSION['logged']) && $_SESSION['logged'] == true){
-		header ("location: nav.html");
-		exit;
-	}
+	// clear all session variable
+	session_unset();
+
+	# destroy session
+	session_destroy();
+	$_SESSION['logged'] = false;
 ?>
 
 
@@ -65,9 +66,6 @@
 	<!--[if lt IE 9]>
 	<script src="js/respond.min.js"></script>
 	<![endif]-->
-
-	<!--For login-->
-	<script src="scripts/login.js"></script>
 
 	</head>
 	<body>

@@ -7,7 +7,7 @@ function register(){
             latitdue = document.getElementById('latitude').value,
             longitude = document.getElementById('longitude').value;
         
-        // Sync HTTP request
+        // Request
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function (){
             // get response
