@@ -1,5 +1,6 @@
 function check_name (uname){
-    if (uname != ""){
+    // check if empty and the format
+    if (uname != "" && /^[a-z0-9A-Z]{1,}$/.test(document.getElementById('Account').value) == true){
         // flush field
         document.getElementById("account_check_msg").innerHTML = "";
         let xhttp = new XMLHttpRequest();
@@ -28,7 +29,10 @@ function check_name (uname){
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhttp.send("uname="+uname);
     }
-    else{
+    else if (uname == ""){
         document.getElementById("account_check_msg").innerHTML = "This field can't be empty !!";
+    }
+    else if (/^[a-z0-9A-Z]{1,}$/.test(document.getElementById('Account').value) == false){
+        document.getElementById('account_check_msg').innerHTML = "Only allow A-Z, a-z, 0-9 !!";
     }
 }
