@@ -12,7 +12,7 @@ $conn = require_once "../db_account/config.php";
 $hashpwd = hash('sha256', $password);
 
 try {
-    $sql = "SELECT *, ST_X(location) as latitude, ST_Y(location) as longitude FROM user WHERE account = :account AND password = :hashpwd";
+    $sql = "SELECT *, ST_X(location) as longitude, ST_Y(location) as latitude FROM user WHERE account = :account AND password = :hashpwd";
     $stmt = $conn->prepare($sql);
     $data = [':account'=>$account, ':hashpwd'=>$hashpwd];
     $stmt->execute($data);

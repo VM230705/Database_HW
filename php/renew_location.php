@@ -17,11 +17,11 @@ try{
     // update database value
     $sql = "UPDATE user SET location=ST_GeomFromText(:value) where account=:account";
     $stmt = $conn->prepare($sql);
-    $data = [':account'=>$account, ':value'=>"POINT($latitude $longitude)"];
+    $data = [':account'=>$account, ':value'=>"POINT($longitude $latitude)"];
     $stmt->execute($data);
 
     // update session value
-    $sql = "SELECT ST_X(location) as latitude, ST_Y(location) as longitude FROM user WHERE account = :account";
+    $sql = "SELECT ST_X(location) as longitude, ST_Y(location) as latitude FROM user WHERE account = :account";
     $stmt = $conn->prepare($sql);
     $data = [':account'=>$account];
     $stmt->execute($data);
@@ -35,7 +35,7 @@ try{
     $latitude = $_SESSION['latitude'];
     $longitude = $_SESSION['longitude'];
 
-    echo "Account: $account, Name: $name, Phone: $phone, Location: ($latitude, $longitude)";
+    echo "Account: $account, Name: $name, Phone: $phone, Location: ($longitude, $latitude)";
 }
 catch (Exception $e){
     echo "$e->getMessage()";

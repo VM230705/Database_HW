@@ -23,7 +23,7 @@
     <script>
       window.onload = show_profile;
       function show_profile(){
-        document.getElementById('user_profile').innerHTML = 'Account: $account, Name: $name, Phone: $phone, Location: ($latitude, $longitude)';
+        document.getElementById('user_profile').innerHTML = 'Account: $account, Name: $name, Phone: $phone, Location: (Longitude: $longitude, Latitude: $latitude)';
         document.getElementById('username').innerHTML = '$account';
       }
     </script>

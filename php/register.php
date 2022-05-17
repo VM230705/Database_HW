@@ -30,7 +30,7 @@ try {
                 INSERT INTO user (account, password, name, phone, location)
                 VALUES (:account, :password, :name, :phone, ST_GeomFromText(:value))";
             $stmt = $conn->prepare($sql);
-            $datas = [':account'=>$account, ':password'=>$hashpwd, ':name'=>$username, ':phone'=>$phonenumber, ':value'=>"POINT($latitude $longitude)"];
+            $datas = [':account'=>$account, ':password'=>$hashpwd, ':name'=>$username, ':phone'=>$phonenumber, ':value'=>"POINT($longitude $latitude)"];
             $stmt->execute($datas);
         }
         catch (PDOException $e){
