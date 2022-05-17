@@ -52,7 +52,7 @@
   <script src="scripts/renew_location.js"></script>
   <!-- register shop with ajax -->
   <script type="text/javascript" src="scripts/ajax_shop.js"></script>
-  <script type="text/javascript" src="scripts/register_shop.js"></script>a
+  <script type="text/javascript" src="scripts/register_shop.js"></script>
   <!-- Add meal into database -->
   <script type="text/javascript" src="scripts/addmeal.js"></script>
   
@@ -414,7 +414,6 @@
               </thead>
               <tbody>
               <?php 
-              // 店名要換掉
               $result = $conn->query("SELECT * FROM meal where shopname = '$shopname'");
               $count = 0;
               ?>
