@@ -20,6 +20,11 @@ function isValidLongitude($longitude){
     $username='root';
     $password='DBHW2';
     $dbname='db_hw';
+    //$dbname='db_hw2';
+    //$dbusername='root';
+    //$username='eric';
+    //$dbpassword='DBHW2';
+    //$password='eric';
 
     $conn = mysqli_connect($host, $username, $password, $dbname);
     

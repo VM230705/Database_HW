@@ -31,17 +31,30 @@
 
             // Allow certain file formats 
             $allowTypes = array('jpg','png','jpeg','gif'); 
-            if(in_array($fileType, $allowTypes)){ 
-                $image = $_FILES['myFile']['tmp_name']; 
-                $imgContent = addslashes(file_get_contents($image)); 
+            if(in_array($fileType, $allowTypes)){
+                //開啟圖片檔
+                $file = fopen($_FILES["myFile"]["tmp_name"], "rb");
+                // 讀入圖片檔資料
+                $fileContents = fread($file, filesize($_FILES["myFile"]["tmp_name"])); 
+                //關閉圖片檔
+                fclose($file);
+                //讀取出來的圖片資料必須使用base64_encode()函數加以編碼：圖片檔案資料編碼
+                //$fileContents = base64_decode($fileContents);
+                //echo $fileContents;
+                //$image = $_FILES['myFile']['tmp_name']; 
+                //$imgContent = addslashes(file_get_contents($image));
+                //echo $imgContent;
+                //echo "fuck you";
+                //echo base64_decode($imgContent); 
                 $query = "INSERT INTO meal (mealname, picture, price, quantity, shopname) 
-                VALUES ('$mealname', '$imgContent', $price, $quantity, '$shopname')";
+                VALUES (?, ?, ?, ?, ?)";
                 // Insert image content into database 
-                
+
                 // $insert = $conn->query($query) or die($conn->error); 
                 $stmt = $conn->prepare($query);
-                $stmt->bind_param('ssiis', $mealname, $imgContent, $price, $quantity, $shopname); // replace question marks with values
+                $stmt->bind_param('ssiis', $mealname, $fileContents, $price, $quantity, $shopname); // replace question marks with values
                 $stmt->execute();
+                //$stmt->execute(array(":mealname"=>$mealname, ":imgContent"=>$imgContent,":price"=>$price,":quantity"=>$quantity,":shopname"=>$shopname));
                 $result = $stmt->get_result();
                 if($result){ 
                     

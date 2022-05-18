@@ -2,7 +2,9 @@
     $dbservername='localhost';
     $dbname='db_hw';
     $dbusername='root';
+    //$dbusername='eric';
     $dbpassword='DBHW2';
+    //$dbpassword='eric';
 
     /* Attempt to make connection to database */
     try {

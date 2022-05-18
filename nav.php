@@ -31,6 +31,93 @@
   }
   $query = "SELECT shopname, ST_AsText(location) AS location, category, account FROM shop WHERE account = '$account'";
   $have_shop = $conn->query($query);
+  //initialse $_SESSION['s_xxx']
+  $_SESSION['s_shopname'] = isset($_SESSION['s_shopname'])?$_SESSION['s_shopname'] :false;
+  $_SESSION['s_shopname_d'] = isset($_SESSION['s_shopname_d'])?$_SESSION['s_shopname_d'] :false;
+  $_SESSION['s_category'] = isset($_SESSION['s_category'])?$_SESSION['s_category'] :false;
+  $_SESSION['s_category_d'] = isset($_SESSION['s_category_d'])?$_SESSION['s_category_d'] :false;
+  $_SESSION['s_distance'] = isset($_SESSION['s_distance'])?$_SESSION['s_distance'] :false;
+  $_SESSION['s_distance_d'] = isset($_SESSION['s_distance_d'])?$_SESSION['s_distance_d'] :false;
+
+  $_SESSION['shop'] = isset($_SESSION['shop'])?$_SESSION['shop']:"";
+  $_SESSION['distance'] = isset($_SESSION['distance'])?$_SESSION['distance']:"";
+  $_SESSION['left_price'] = isset($_SESSION['left_price'])?$_SESSION['left_price']:"";
+  $_SESSION['right_price'] = isset($_SESSION['right_price'])?$_SESSION['right_price']:"";
+  $_SESSION['meal'] = isset($_SESSION['meal'])?$_SESSION['meal']:"";
+  $_SESSION['category'] = isset($_SESSION['category'])?$_SESSION['category']:"";
+
+  //get input by post
+  $isempty = true;
+  if(!empty($_POST['shop'])){
+    $isempty = false;
+    $_SESSION['shop'] = htmlspecialchars($_POST['shop']);
+  }
+  else{
+    $t_shop = $_SESSION['shop'];
+    $_SESSION['shop'] =null;
+  }
+
+  if(!empty($_POST['distance'])){
+    $_SESSION['distance'] = htmlspecialchars($_POST['distance']);
+  }
+  else{
+      $_SESSION['distance'] =null;
+  }
+
+  if(!empty($_POST['left_price'])){
+    $isempty = false;
+    $_SESSION['left_price'] = htmlspecialchars($_POST['left_price']);
+  }else{
+    $t_left_price= $_SESSION['left_price'];
+    $_SESSION['left_price'] =null;
+  }
+
+  if(!empty($_POST['right_price'])){
+    $isempty = false;
+    $_SESSION['right_price'] = htmlspecialchars($_POST['right_price']);  
+  }else{
+    $t_right_price = $_SESSION['right_price'];
+    $_SESSION['right_price'] =null;
+  }
+
+
+  if(!empty($_POST['meal'])){
+    $isempty = false;
+    $_SESSION['meal'] = htmlspecialchars($_POST['meal']);
+  }else{
+    $t_meal = $_SESSION['meal'];
+    $_SESSION['meal'] =null;
+  }
+
+  if(!empty($_POST['category'])){
+    $isempty = false;
+    $_SESSION['category'] = htmlspecialchars($_POST['category']);
+  }else{
+    $t_category = $_SESSION['category'];
+    $_SESSION['category'] =null;
+  }
+
+  if($isempty && !isset ($_POST['search_b'])){
+    $_SESSION['shop'] = $t_shop;
+    $_SESSION['left_price'] = $t_left_price;
+    $_SESSION['right_price'] = $t_right_price;
+    $_SESSION['meal'] = $t_meal;
+    $_SESSION['category'] = $t_category;
+  }
+  else if($isempty){
+    $_SESSION['shop'] = null;
+    $_SESSION['left_price'] = null;
+    $_SESSION['right_price'] = null;
+    $_SESSION['meal'] = null;
+    $_SESSION['category'] = null;
+    $_SESSION['s_shopname_d'] = false;
+    $_SESSION['s_shopname'] = false;
+    $_SESSION['s_category_d'] = false;
+    $_SESSION['s_category'] = false;
+    $_SESSION['s_distance'] = false;
+    $_SESSION['s_distance_d'] = false;
+  }  
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -140,23 +227,23 @@
         <!-- 
                 
              -->
-        <h3>Search</h3>
+             <h3>Search</h3>
         <div class=" row  col-xs-8">
-          <form class="form-horizontal" action="/action_page.php">
+          <form class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" name="search">
             <div class="form-group">
               <label class="control-label col-sm-1" for="Shop">Shop</label>
               <div class="col-sm-5">
-                <input type="text" class="form-control" placeholder="Enter Shop name">
+                <input type="text" class="form-control" placeholder="Enter Shop name" name="shop">
               </div>
-              <label class="control-label col-sm-1" for="distance">distance</label>
+              <label class="control-label col-sm-1" for="distance" >distance</label>
               <div class="col-sm-5">
 
 
-                <select class="form-control" id="sel1">
+                <select class="form-control" id="sel1" name="distance">
+                  <option>all</option>
                   <option>near</option>
                   <option>medium </option>
                   <option>far</option>
-
                 </select>
               </div>
 
@@ -167,18 +254,18 @@
               <label class="control-label col-sm-1" for="Price">Price</label>
               <div class="col-sm-2">
 
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" name="left_price">
 
               </div>
               <label class="control-label col-sm-1" for="~">~</label>
               <div class="col-sm-2">
 
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" name="right_price">
 
               </div>
               <label class="control-label col-sm-1" for="Meal">Meal</label>
               <div class="col-sm-5">
-                <input type="text" list="Meals" class="form-control" id="Meal" placeholder="Enter Meal">
+                <input type="text" list="Meals" class="form-control" id="Meal" placeholder="Enter Meal" name="meal">
                 <datalist id="Meals">
                   <option value="Hamburger">
                   <option value="coffee">
@@ -191,24 +278,325 @@
             
               
                 <div class="col-sm-5">
-                  <input type="text" list="categorys" class="form-control" id="category" placeholder="Enter shop category">
+                  <input type="text" list="categorys" class="form-control" id="category" placeholder="Enter shop category" name="category">
                   <datalist id="categorys">
                     <option value="fast food">
                
                   </datalist>
                 </div>
-                <button type="submit" style="margin-left: 18px;"class="btn btn-primary">Search</button>
-              
+                <button type="submit" style="margin-left: 18px;"class="btn btn-primary" name="search_b" >Search(If inputs are empty, reset the filter.)</button>
             </div>
+            <div class="form-group">
+                <br></br>
+                <button type="input" style="margin-left: 18px;"class="btn btn-primary" name="s_shopname">sort by Shop name</button>                
+                <button type="input" style="margin-left: 18px;"class="btn btn-primary" name="s_category">sort by Shop category</button>
+                <button type="input" style="margin-left: 18px;"class="btn btn-primary" name="s_distance">sort by Distance</button>
+                <br></br>
+                <button type="input" style="margin-left: 18px;"class="btn btn-primary" name="s_shopname_d">sort by Shop name(descend)</button>                
+                <button type="input" style="margin-left: 18px;"class="btn btn-primary" name="s_category_d">sort by Shop category(descend)</button>
+                <button type="input" style="margin-left: 18px;"class="btn btn-primary" name="s_distance_d">sort by Distance(descend)</button>
+
+            </div> 
           </form>
         </div>
+        <?php
+              // echo "Search:"."<br>";
+              // echo !empty($_SESSION['shop'])?"Shop name= ".$_SESSION['shop']:"Haven't input Shop name.";
+              // echo "<br>";
+              // echo !empty($_SESSION['distance'])?"Distance=".$_SESSION['distance']:"Haven't input distance.";
+              // echo "<br>";
+              // echo !empty($_SESSION['left_price'])?"left_price =".$_SESSION['left_price']:"Haven't input left_price.";
+              // echo "<br>";
+              // echo !empty($_SESSION['right_price'])?"right_price=".$_SESSION['right_price']:"Haven't input right_price.";
+              // echo "<br>";
+              // echo !empty($_SESSION['meal'])?"meal = ".$_SESSION['meal']:"Haven't input meal." ;
+              // echo "<br>";
+              // echo !empty($_SESSION['category'])?"category=".$_SESSION['category']:"Haven't input category.";
+              // echo "<br>";
+
+
+              //filter function.
+              $conn = require_once "db_account/config.php";
+              
+              // query
+              $stores = [];
+              $myset = [];
+              $nosearch=true;
+              if(!empty($_SESSION['shop'])){
+                $nosearch = false;
+                
+                $t_shop = $_SESSION['shop'];
+                $t_shop = "%".strtoupper($t_shop)."%";
+                $stmt1 = $conn->prepare("select * from shop where upper(shopname) LIKE :shop;");
+                $stmt1->execute(array('shop' => $t_shop));
+                foreach($stmt1 as $row){
+                  $flag = false;
+                  foreach($myset as $index){
+                    if($index==$row['shopname']){
+                      $flag = true;
+                      break;
+                    }
+                  }
+                  if (!$flag){
+                    array_push($stores,$row);
+                    array_push($myset,$row['shopname']);
+                  }
+                }
+              }
+              
+              
+              if(!empty($_SESSION['distance'])&&$_SESSION['distance']!='all'){
+                $nosearch = false;
+                $latitude = $_SESSION['latitude'];
+                $longitude = $_SESSION['longitude'];
+                $tag = "";
+                $stmt1 =$conn->prepare("select * from shop;");
+                
+                if($_SESSION['distance']=="near"){
+                  $stmt1 = $conn->prepare("select * from shop where ST_Distance_Sphere(POINT(:longitude,:latitude),location)  <=50000 ;");
+                  $stmt1->execute(array('longitude'=>$longitude,'latitude'=>$latitude));
+                  $tag = "near";
+                  
+                }
+                else if($_SESSION['distance']=="medium"){
+                  $stmt1 = $conn->prepare("select *from shop where ST_Distance_Sphere(POINT(:longitude,:latitude),location)  > 50000 and ST_Distance_Sphere(POINT(:longitude,:latitude),location)  <= 300000;");
+                  $stmt1->execute(array('longitude'=>$longitude,'latitude'=>$latitude));
+                  $tag="medium";
+                }else if($_SESSION['distance']=="far"){
+                  $stmt1 = $conn->prepare("select * from shop where ST_Distance_Sphere(POINT(:longitude,:latitude),location)  > 300000;");
+                  $stmt1->execute(array('longitude'=>$longitude,'latitude'=>$latitude));
+                  $tag="far";
+                }
+                
+                foreach($stmt1 as $row){
+                  $flag = false;
+                  foreach($myset as $index){
+                    if($index==$row['shopname']){
+                      $flag = true;
+                      break;
+                    }
+                  }
+                  if (!$flag){
+                    $row['distance'] =$tag;
+                    array_push($stores,$row);
+                    array_push($myset,$row['shopname']);
+                  }
+                }
+              }
+              
+              if(!empty($_SESSION['left_price']) && !empty($_SESSION['right_price'])){
+                $nosearch = false;
+                $stmt1 = $conn->prepare("select * from meal,shop where meal.shopname = shop.shopname and meal.price >= :left_price and meal.price<=:right_price;");
+                $stmt1->execute(array('left_price' => $_SESSION['left_price'], 'right_price'=>$_SESSION['right_price']));
+                foreach($stmt1 as $row){
+                  $flag = false;
+                  foreach($myset as $index){
+                    if($index==$row['shopname']){
+                      $flag = true;
+                      break;
+                    }
+                  }
+                  if (!$flag){
+                    array_push($stores,$row);
+                    array_push($myset,$row['shopname']);
+                  }
+                }
+              }
+
+              else if(!empty($_SESSION['left_price'])&& empty($_SESSION['right_price'])){
+                $nosearch = false;
+                $stmt1 = $conn->prepare("select * from meal,shop where meal.shopname = shop.shopname and meal.price >= :left_price ;");
+                $stmt1->execute(array('left_price' => $_SESSION['left_price']));
+                foreach($stmt1 as $row){
+                  $flag = false;
+                  foreach($myset as $index){
+                    if($index==$row['shopname']){
+                      $flag = true;
+                      break;
+                    }
+                  }
+                  if (!$flag){
+                    array_push($stores,$row);
+                    array_push($myset,$row['shopname']);
+                  }
+                }
+              }
+              else if(empty($_SESSION['left_price'])&&!empty($_SESSION['right_price'])){
+                $nosearch = false;
+                $stmt1 = $conn->prepare("select * from meal,shop where meal.shopname = shop.shopname and meal.price <= :right_price ;");
+                $stmt1->execute(array('right_price' => $_SESSION['right_price']));
+                foreach($stmt1 as $row){
+                  $flag = false;
+                  foreach($myset as $index){
+                    if($index==$row['shopname']){
+                      $flag = true;
+                      break;
+                    }
+                  }
+                  if (!$flag){
+                    array_push($stores,$row);
+                    array_push($myset,$row['shopname']);
+                  }
+                }
+              }
+
+              if(!empty($_SESSION['meal'])){
+                $nosearch = false;
+                $t_meal = $_SESSION['meal'];
+                $t_meal = "%".strtoupper($t_meal)."%";
+                $stmt1 = $conn->prepare("select * from meal,shop where meal.shopname = shop.shopname and upper(meal.mealname) LIKE :meal;");
+                $stmt1->execute(array('meal' => $t_meal));
+                foreach($stmt1 as $row){
+                  $flag = false;
+                  foreach($myset as $index){
+                    if($index==$row['shopname']){
+                      $flag = true;
+                      break;
+                    }
+                  }
+                  if (!$flag){
+                    array_push($stores,$row);
+                    array_push($myset,$row['shopname']);
+                  }
+                }
+              }
+
+              if(!empty($_SESSION['category'])){
+                $nosearch = false;
+                $t_category = $_SESSION['category'];
+                $t_category = "%".strtoupper($t_category)."%";
+                $stmt1 = $conn->prepare("select * from shop where upper(category) LIKE :category;");
+                $stmt1->execute(array('category' =>$t_category));
+                foreach($stmt1 as $row){
+                  $flag = false;
+                  foreach($myset as $index){
+                    if($index==$row['shopname']){
+                      $flag = true;
+                      break;
+                    }
+                  }
+                  if (!$flag){
+                    array_push($stores,$row);
+                    array_push($myset,$row['shopname']);
+                  }
+                }
+              }
+              
+              if ($nosearch){
+                $stmt1 = $conn->query("select * from shop;");
+                foreach($stmt1 as $row){
+                  $flag = false;
+                  foreach($myset as $index){
+                    if($index==$row['shopname']){
+                      $flag = true;
+                      break;
+                    }
+                  }
+                  if (!$flag){
+                    array_push($stores,$row);
+                    array_push($myset,$row['shopname']);
+                  }
+                }
+              }
+              $stmt1 = $conn->prepare("select *, ST_Distance_Sphere(POINT(:longitude,:latitude),location) as distance from shop;");
+              $stmt1->execute(array('longitude'=>$_SESSION['longitude'],'latitude'=>$_SESSION['latitude']));
+              $stores1=[];
+              foreach($stores as $s){
+                foreach($stmt1 as $row){
+                  if($row['shopname']==$s['shopname']){
+                    if($row['distance']<=50000){
+                      $s['distance'] = "near";
+                    }
+                    else if($row['distance']<=300000){
+                      $s['distance'] = "medium";
+                    }else{
+                      $s['distance'] = "far";
+                    }
+                    break;
+                  }
+                }
+                array_push($stores1,$s);
+              }
+              $stores = $stores1;
+
+              if(isset($_POST['s_shopname'])){
+                usort($stores,fn($a,$b)=>strtolower($a['shopname'])>strtolower($b['shopname']));
+                $_SESSION['s_shopname']=true;
+                $_SESSION['s_shopname_d']=false;
+                $_SESSION['s_category']=false;
+                $_SESSION['s_category_d']=false;
+                $_SESSION['s_distance'] = false;
+                $_SESSION['s_distance_d']=false;
+              }
+              else if(isset($_POST['s_shopname_d'])){
+                usort($stores,fn($a,$b)=>strtolower($a['shopname'])<strtolower($b['shopname']));
+                $_SESSION['s_shopname']=false;
+                $_SESSION['s_shopname_d']=true;
+                $_SESSION['s_category']=false;
+                $_SESSION['s_category_d']=false;
+                $_SESSION['s_distance'] = false;
+                $_SESSION['s_distance_d']=false;
+              }
+              else if($_SESSION['s_shopname']){
+                usort($stores,fn($a,$b)=>strtolower($a['shopname'])>strtolower($b['shopname']));
+              }else if($_SESSION['s_shopname_d']){
+                usort($stores,fn($a,$b)=>strtolower($a['shopname'])<strtolower($b['shopname']));
+              }
+              
+              if(isset($_POST['s_category'])){
+                usort($stores,fn($a,$b)=>strtolower($a['category'])>strtolower($b['category']));
+                $_SESSION['s_shopname']=false;
+                $_SESSION['s_shopname_d']=false;
+                $_SESSION['s_category']=true;
+                $_SESSION['s_category_d']=false;
+                $_SESSION['s_distance'] = false;
+                $_SESSION['s_distance_d']=false;
+              }else if(isset($_POST['s_category_d'])){
+                usort($stores,fn($a,$b)=>strtolower($a['category'])<strtolower($b['category']));
+                $_SESSION['s_shopname']=false;
+                $_SESSION['s_shopname_d']=false;
+                $_SESSION['s_category']=false;
+                $_SESSION['s_category_d']=true;
+                $_SESSION['s_distance'] = false;
+                $_SESSION['s_distance_d']=false;
+              }else if($_SESSION['s_category']){
+                usort($stores,fn($a,$b)=>strtolower($a['category'])>strtolower($b['category']));
+              }else if($_SESSION['s_category_d']){
+                usort($stores,fn($a,$b)=>strtolower($a['category'])<strtolower($b['category']));
+              }
+              
+              if(isset($_POST['s_distance'])){
+                usort($stores,fn($a,$b)=>$a['distance']<$b['distance']);
+                $_SESSION['s_shopname']=false;
+                $_SESSION['s_shopname_d']=false;
+                $_SESSION['s_category']=false;
+                $_SESSION['s_category_d']=false;
+                $_SESSION['s_distance'] = true;
+                $_SESSION['s_distance_d']=false;
+              }else if(isset($_POST['s_distance_d'])){
+                usort($stores,fn($a,$b)=>$a['distance']>$b['distance']);
+                $_SESSION['s_shopname']=false;
+                $_SESSION['s_shopname_d']=false;
+                $_SESSION['s_category']=false;
+                $_SESSION['s_category_d']=false;
+                $_SESSION['s_distance'] = false;
+                $_SESSION['s_distance_d']=true;
+              }else if($_SESSION['s_distance']){
+                usort($stores,fn($a,$b)=>$a['distance']<$b['distance']);
+              }else if($_SESSION['s_distance_d']){
+                usort($stores,fn($a,$b)=>$a['distance']>$b['distance']);
+              }
+              
+          ?>
+        <!-- </div> -->
+        
+
         <div class="row">
           <div class="  col-xs-8">
             <table class="table" style=" margin-top: 15px;">
               <thead>
                 <tr>
                   <th scope="col">#</th>
-                
                   <th scope="col">shop name</th>
                   <th scope="col">shop category</th>
                   <th scope="col">Distance</th>
@@ -216,94 +604,136 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row">1</th>
-               
-                  <td>macdonald</td>
-                  <td>fast food</td>
                 
-                  <td>near </td>
-                  <td>  <button type="button" class="btn btn-info " data-toggle="modal" data-target="#macdonald">Open menu</button></td>
-            
-                </tr>
-           
-
+                  <!-- <th scope="row">1</th> -->
+                  <?php
+                    //pages (bonus functions)
+                    $data_nums = sizeof($stores);
+                    $per = 5;
+                    $pages = ceil($data_nums/$per);
+                    if(!isset($_GET['page'])){
+                      $page = 1;
+                    }else{
+                      $page = intval($_GET["page"]);
+                    }
+                    $start = ($page-1)*$per;
+                    $temp = 1;
+                    for($x=$start;$x<$start+$per and $x < $data_nums;$x++){
+                      $s = $stores[intval($x)];
+                      echo "<tr>";
+                      echo '<th scope="row">' .$temp."</th>";
+                      echo "<td>". $s['shopname']."</td><td>".$s['category']."</td>";
+                      echo "<td>".$s['distance']."</td>";
+                      echo "<td><button type='button' class='btn btn-info ' data-toggle='modal' data-target=#".$s['shopname'].">Open menu</button></td>";
+                      echo "</tr>";
+                      $temp ++;
+                    }
+                  ?>
+                  
+                
+                  <!-- <td>near </td> -->
               </tbody>
             </table>
+
 
                 <!-- Modal -->
-  <div class="modal fade" id="macdonald"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">menu</h4>
-        </div>
-        <div class="modal-body">
-         <!--  -->
-  
-         <div class="row">
-          <div class="  col-xs-12">
-            <table class="table" style=" margin-top: 15px;">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Picture</th>
-                 
-                  <th scope="col">meal name</th>
-               
-                  <th scope="col">price</th>
-                  <th scope="col">Quantity</th>
-                
-                  <th scope="col">Order check</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td><img src="Picture/1.jpg" with="50" heigh="10" alt="Hamburger"></td>
-                
-                  <td>Hamburger</td>
-                
-                  <td>80 </td>
-                  <td>20 </td>
-              
-                  <td> <input type="checkbox" id="cbox1" value="Hamburger"></td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td><img src="Picture/2.jpg" with="10" heigh="10" alt="coffee"></td>
-                 
-                  <td>coffee</td>
-             
-                  <td>50 </td>
-                  <td>20</td>
-              
-                  <td><input type="checkbox" id="cbox2" value="coffee"></td>
-                </tr>
+                <?php
 
-              </tbody>
-            </table>
+  for($x=$start;$x<$start+$per and $x<$data_nums;$x++){
+      $s = $stores[intval($x)];
+      $foods = [];
+      $stmt=$conn->prepare("select * from meal where shopname=:shopname");
+      $stmt->execute(array('shopname' => $s['shopname']));
+      foreach($stmt as $food){
+        array_push($foods,$food);
+      }
+    echo "<div class='modal fade' id=".$s['shopname']."  data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='staticBackdropLabel' aria-hidden='true'>";
+      echo '<div class="modal-dialog">';
+        echo "<!-- Modal content-->";
+        echo '<div class="modal-content">';
+          echo '<div class="modal-header">';
+            echo '<button type="button" class="close" data-dismiss="modal">&times;</button>';
+            echo '<h4 class="modal-title">menu</h4>';
+          echo '</div>';
+          echo '<div class="modal-body">';
+          echo '<!--  -->';
+
+          echo '<div class="row">';
+            echo '<div class="  col-xs-12">';
+              echo '<table class="table" style=" margin-top: 15px;">';
+                echo '<thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Picture</th>
+                  
+                    <th scope="col">meal name</th>
+                
+                    <th scope="col">price</th>
+                    <th scope="col">Quantity</th>
+                  
+                    <th scope="col">Order check</th>
+                  </tr>
+                </thead>';
+                $temp =0;
+                foreach($foods as $food){
+                  $temp++;
+                echo '<tbody>';
+                echo '<tr>';
+                    echo '<th scope="row">'.$temp.'</th>';
+                    echo '<td><img src="data:image/jpg;charset=utf8;base64,'.base64_encode($food['picture']).'" style="width: 40%;" with="50" heigh="10" alt='.$food['mealname'].'></td>';
+                  
+                    echo '<td>'.$food['mealname'].'</td>';
+                  
+                    echo '<td>'.$food['price'].'</td>';
+                    echo '<td>'.$food['quantity'].'</td>';
+                
+                    echo '<td> <input type="checkbox" id="cbox1" value='.$food['mealname'].'></td>';
+                echo '</tr>';
+                }
+
+                echo'</tbody>
+              </table>
+            </div>
+
           </div>
+          
 
+          <!--  -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Order</button>
+          </div>
         </div>
         
-
-        <!--  -->
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Order</button>
-        </div>
       </div>
-      
-    </div>
-  </div>
-          </div>
+    </div>';
+    }
+echo 'Total '.$data_nums.' stores. At page '.$page.'. Total '.$pages.' pages. ';
+echo "<a href=?page=1>First page</a> ";
+if($page>1){
+  echo "<br /><a href=?page=".($page>1?$page-1:1).">Former page </a>";
+}
+else{
+  echo "<br />";
+}
 
-        </div>
-      </div>
+for( $i=1 ; $i<=$pages ; $i++ ) {
+  if ($i==$page){
+    continue;
+  }
+  if ( $page-3 < $i && $i < $page+3 ) {
+      echo "<a href=?page=".$i.">".$i."</a> ";
+  }
+}
+
+
+
+if($page<$pages){
+  echo " <a href=?page=".($page+1).">next page</a><br /><br />";
+} 
+
+require 'php/db_config.php'; 
+?>
 
     <!--Shop Area-->
       <div id="menu1" class="tab-pane fade">
@@ -419,6 +849,8 @@
               ?>
               <?php if($result->num_rows > 0){ ?> 
                 <tr>
+                
+                
                 <?php while($row = $result->fetch_assoc()){ 
                           $count = $count + 1;
                 ?> 
