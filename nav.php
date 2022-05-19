@@ -636,8 +636,8 @@
             </table>
 
 
-                <!-- Modal -->
-                <?php
+              <!-- Modal -->
+  <?php
 
   for($x=$start;$x<$start+$per and $x<$data_nums;$x++){
       $s = $stores[intval($x)];
@@ -736,6 +736,10 @@ require 'php/db_config.php';
 ?>
 
     <!--Shop Area-->
+        </div>
+
+    </div>
+    </div>
       <div id="menu1" class="tab-pane fade">
         <!--import script tag to check sql by php-->
 
@@ -947,7 +951,8 @@ require 'php/db_config.php';
       xhr.open("POST", "php/deletemeal.php");
       xhr.onload = function(){
         if(confirm(this.response) == true){
-          location.reload();
+          //location.reload();
+          window.location.href='nav.php';
         }
         console.log(this.response);
       };
