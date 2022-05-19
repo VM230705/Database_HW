@@ -57,12 +57,18 @@
     $_SESSION['shop'] =null;
   }
 
-  if(!empty($_POST['distance'])){
+  if(!empty($_POST['distance'])&& $_POST['distance']!='all'){
+    $isempty = false;
     $_SESSION['distance'] = htmlspecialchars($_POST['distance']);
   }
-  else{
-      $_SESSION['distance'] =null;
+  else if(!empty($_POST['distance'])){
+    $t_distance = $_SESSION['distance'];
+    $_SESSION['distance'] ='all';
+  }else if(empty($_POST['distance'])){
+    $t_distance = $_SESSION['distance'];
+    //$_SESSION['distance'] ='all';
   }
+
 
   if(!empty($_POST['left_price'])){
     $isempty = false;
@@ -98,14 +104,18 @@
   }
 
   if($isempty && !isset ($_POST['search_b'])){
+    //don't reset
     $_SESSION['shop'] = $t_shop;
+    $_SESSION['distance'] =$t_distance;
     $_SESSION['left_price'] = $t_left_price;
     $_SESSION['right_price'] = $t_right_price;
     $_SESSION['meal'] = $t_meal;
     $_SESSION['category'] = $t_category;
   }
   else if($isempty){
+    //reset
     $_SESSION['shop'] = null;
+    $_SESSION['distance'] = null;
     $_SESSION['left_price'] = null;
     $_SESSION['right_price'] = null;
     $_SESSION['meal'] = null;
@@ -254,13 +264,13 @@
               <label class="control-label col-sm-1" for="Price">Price</label>
               <div class="col-sm-2">
 
-                <input type="text" class="form-control" name="left_price">
+                <input type="number" class="form-control" name="left_price">
 
               </div>
               <label class="control-label col-sm-1" for="~">~</label>
               <div class="col-sm-2">
 
-                <input type="text" class="form-control" name="right_price">
+                <input type="number" class="form-control" name="right_price">
 
               </div>
               <label class="control-label col-sm-1" for="Meal">Meal</label>
@@ -351,18 +361,18 @@
                 $longitude = $_SESSION['longitude'];
                 $tag = "";
                 $stmt1 =$conn->prepare("select * from shop;");
-                
-                if($_SESSION['distance']=="near"){
+                $t_distance = $_SESSION['distance'];
+                if($t_distance=="near"){
                   $stmt1 = $conn->prepare("select * from shop where ST_Distance_Sphere(POINT(:longitude,:latitude),location)  <=50000 ;");
                   $stmt1->execute(array('longitude'=>$longitude,'latitude'=>$latitude));
                   $tag = "near";
                   
                 }
-                else if($_SESSION['distance']=="medium"){
+                else if($t_distance=="medium"){
                   $stmt1 = $conn->prepare("select *from shop where ST_Distance_Sphere(POINT(:longitude,:latitude),location)  > 50000 and ST_Distance_Sphere(POINT(:longitude,:latitude),location)  <= 300000;");
                   $stmt1->execute(array('longitude'=>$longitude,'latitude'=>$latitude));
                   $tag="medium";
-                }else if($_SESSION['distance']=="far"){
+                }else if($t_distance=="far"){
                   $stmt1 = $conn->prepare("select * from shop where ST_Distance_Sphere(POINT(:longitude,:latitude),location)  > 300000;");
                   $stmt1->execute(array('longitude'=>$longitude,'latitude'=>$latitude));
                   $tag="far";
@@ -498,10 +508,11 @@
                   }
                 }
               }
-              $stmt1 = $conn->prepare("select *, ST_Distance_Sphere(POINT(:longitude,:latitude),location) as distance from shop;");
-              $stmt1->execute(array('longitude'=>$_SESSION['longitude'],'latitude'=>$_SESSION['latitude']));
+
               $stores1=[];
               foreach($stores as $s){
+                $stmt1 = $conn->prepare("select *, ST_Distance_Sphere(POINT(:longitude,:latitude),location) as distance from shop;");
+                $stmt1->execute(array('longitude'=>$_SESSION['longitude'],'latitude'=>$_SESSION['latitude']));
                 foreach($stmt1 as $row){
                   if($row['shopname']==$s['shopname']){
                     if($row['distance']<=50000){
@@ -624,6 +635,8 @@
                       echo '<th scope="row">' .$temp."</th>";
                       echo "<td>". $s['shopname']."</td><td>".$s['category']."</td>";
                       echo "<td>".$s['distance']."</td>";
+                      $s['shopname'] = str_replace(' ','',$s['shopname']);
+                      $s['shopname'] = str_replace("'","-",$s['shopname']);
                       echo "<td><button type='button' class='btn btn-info ' data-toggle='modal' data-target=#".$s['shopname'].">Open menu</button></td>";
                       echo "</tr>";
                       $temp ++;
@@ -647,6 +660,8 @@
       foreach($stmt as $food){
         array_push($foods,$food);
       }
+    $s['shopname'] = str_replace(' ','',$s['shopname']);
+    $s['shopname'] = str_replace("'","-",$s['shopname']);
     echo "<div class='modal fade' id=".$s['shopname']."  data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='staticBackdropLabel' aria-hidden='true'>";
       echo '<div class="modal-dialog">';
         echo "<!-- Modal content-->";
