@@ -17,9 +17,18 @@
     $mealname = $_POST["mealname"];
     $price = $_POST["price"];
     $quantity = $_POST["quantity"];
-    //暫時
     $shopname = $_POST["shopname"];
-   
+    
+    $checkname =  "SELECT * FROM meal WHERE mealname = ?";
+    $stmt = $conn->prepare($checkname);   // avoid sql injection
+    $stmt->bind_param("s", $mealname);  // 's' specifies the variable type => 'string'
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result->num_rows != 0){
+        die("<span style='color: red;'>The meal name already exists!!</span>");
+    }
+
+
     // If file upload form is submitted 
     $status = $statusMsg = ''; 
     if(isset($_POST["mealname"])){
@@ -51,18 +60,18 @@
                 // Insert image content into database 
 
                 // $insert = $conn->query($query) or die($conn->error); 
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param('ssiis', $mealname, $fileContents, $price, $quantity, $shopname); // replace question marks with values
-                $stmt->execute();
+                $stmt2 = $conn->prepare($query);
+                $stmt2->bind_param('ssiis', $mealname, $fileContents, $price, $quantity, $shopname); // replace question marks with values
+                $stmt2->execute();
                 //$stmt->execute(array(":mealname"=>$mealname, ":imgContent"=>$imgContent,":price"=>$price,":quantity"=>$quantity,":shopname"=>$shopname));
-                $result = $stmt->get_result();
+                $result2 = $stmt2->get_result();
                 if($result){ 
                     
                     $status = 'Success!'; 
-                    $statusMsg = "File uploaded successfully.";
+                    $statusMsg = "File uploaded successfully!";
                     echo "<span style='color: green;'>".$status."</span><br/>";
                 }
-                echo "<span style='color: green;'>File uploaded successfully.".$statusMsg."</span>"; 
+                echo "<span style='color: green;'>File uploaded successfully!!".$statusMsg."</span>"; 
                 // else{
                 //     echo $result."1";
                 //     $statusMsg = "File upload failed, please try again."; 
