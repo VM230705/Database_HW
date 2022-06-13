@@ -23,10 +23,10 @@ $(document).ready(function (e) {
                 else{
                     // view uploaded file.
                     // alert(data);
-                    console.log("valid");
-                    console.log(data);
-                    console.log("valid");
-                    alert(data);
+                    // console.log("valid");
+                    // console.log(data);
+                    // console.log("valid1111");
+                    // alert(data);
                     
                     $("#preview").html(data).fadeIn();
                     $("#add_meal")[0].reset(); 

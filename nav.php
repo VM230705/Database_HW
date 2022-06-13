@@ -58,17 +58,16 @@
   }
 
   if(!empty($_POST['distance'])&& $_POST['distance']!='all'){
-    $isempty = false;
+	  $isempty = false;
     $_SESSION['distance'] = htmlspecialchars($_POST['distance']);
   }
-  else if(!empty($_POST['distance'])){
-    $t_distance = $_SESSION['distance'];
-    $_SESSION['distance'] ='all';
+  else if(!empty($_POST['distance']))
+  {
+	  $t_distance = $_SESSION['distance'];
+      $_SESSION['distance'] ='all';
   }else if(empty($_POST['distance'])){
-    $t_distance = $_SESSION['distance'];
-    //$_SESSION['distance'] ='all';
+  	$t_distance = $_SESSION['distance'];
   }
-
 
   if(!empty($_POST['left_price'])){
     $isempty = false;
@@ -104,18 +103,17 @@
   }
 
   if($isempty && !isset ($_POST['search_b'])){
-    //don't reset
-    $_SESSION['shop'] = $t_shop;
-    $_SESSION['distance'] =$t_distance;
+	  //don't reset
+	  $_SESSION['shop'] = $t_shop;
     $_SESSION['left_price'] = $t_left_price;
     $_SESSION['right_price'] = $t_right_price;
     $_SESSION['meal'] = $t_meal;
     $_SESSION['category'] = $t_category;
   }
   else if($isempty){
-    //reset
-    $_SESSION['shop'] = null;
-    $_SESSION['distance'] = null;
+	  //reset
+	  $_SESSION['shop'] = null;
+	  $_SESSION['distance']=null;
     $_SESSION['left_price'] = null;
     $_SESSION['right_price'] = null;
     $_SESSION['meal'] = null;
@@ -170,16 +168,16 @@
   <div class="container">
 
     <ul class="nav nav-tabs">
-      <li class="active"><a href="#home">Home</a></li>
-      <li><a href="#menu1">shop</a></li>
+      <li class="active"><a href="#home" onclick="hidemenu()">Home</a></li>
+      <li><a href="#menu1" onclick="hidehome()">shop</a></li>
 
 
     </ul>
 
     <div class="tab-content">
       <div id="home" class="tab-pane fade in active">
+        <div class="row" id="hide1">
         <h3>Profile</h3>
-        <div class="row">
           <div class="col-xs-12">
             <div id="user_profile">Account: , Name: , Phone: , Location: (null, null)</div>
             
@@ -238,7 +236,7 @@
                 
              -->
              <h3>Search</h3>
-        <div class=" row  col-xs-8">
+        <div class=" row  col-xs-8" id="hide2">
           <form class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" name="search">
             <div class="form-group">
               <label class="control-label col-sm-1" for="Shop">Shop</label>
@@ -709,10 +707,8 @@
                 echo'</tbody>
               </table>
             </div>
-
           </div>
           
-
           <!--  -->
           </div>
           <div class="modal-footer">
@@ -747,17 +743,16 @@ if($page<$pages){
   echo " <a href=?page=".($page+1).">next page</a><br /><br />";
 } 
 
-require 'php/db_config.php'; 
 ?>
 
-    <!--Shop Area-->
-        </div>
+      </div>
+    </div>
+  </div>
 
-    </div>
-    </div>
-      <div id="menu1" class="tab-pane fade">
+  <!--Shop Area-->
+  <div id="menu1" class="tab-pane fade">
         <!--import script tag to check sql by php-->
-
+      <?php require 'php/db_config.php'; ?>
         <!--Register Shop-->
       <form onsubmit="return register_shop()">
         <h3> Start a business </h3>
@@ -874,7 +869,7 @@ require 'php/db_config.php';
                           $count = $count + 1;
                 ?> 
                   <th scope="row"><?php echo $count;?></th>
-                  <td><img src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($row['picture']); ?>" with="10" heigh="10" alt="<?php echo $row['mealname']?>"></td>
+		  <td><img src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($row['picture']); ?>" " style = "width:40%;" with="50" heigh="10" alt="<?php echo $row['mealname']?>"></td>
                   <td><?php echo $row['mealname']?></td>
                   <td><?php echo $row['price']?> </td>
                   <td><?php echo $row['quantity']?></td>
@@ -929,11 +924,6 @@ require 'php/db_config.php';
       </div>
       </div>
 
-
-
-    </div>
-  </div>
-
   <!-- Option 1: Bootstrap Bundle with Popper -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script> -->
   <script>
@@ -966,8 +956,7 @@ require 'php/db_config.php';
       xhr.open("POST", "php/deletemeal.php");
       xhr.onload = function(){
         if(confirm(this.response) == true){
-          //location.reload();
-          window.location.href='nav.php';
+          window.location.href = 'nav.php';
         }
         console.log(this.response);
       };
@@ -976,6 +965,29 @@ require 'php/db_config.php';
       
       return false;
       }
+
+      // function hidemenu(){
+      //   alert("hidemenu")
+      //   var shoparea = document.getElementById("menu1");
+      //   shoparea.style.display = 'none';
+      //   var hide1 = document.getElementById("hide1");
+      //   hide1.style.display = 'block';
+      //   var hide2 = document.getElementById("hide2");
+      //   hide2.style.display = 'block';
+      //   var hide3 = document.getElementById("hide3");
+      //   hide3.style.display = 'block';
+      // }
+      // function hidehome(){
+      //   alert("hidehome")
+      //   var hide1 = document.getElementById("hide1");
+      //   hide1.style.display = 'none';
+      //   var hide2 = document.getElementById("hide2");
+      //   hide2.style.display = 'none';
+      //   var hide3 = document.getElementById("hide3");
+      //   hide3.style.display = 'none';
+      //   var shoparea = document.getElementById("menu1");
+      //   shoparea.style.display = 'block';
+      // }
   </script>
 
 <?php   
@@ -1000,4 +1012,3 @@ else{
 </body>
 
 </html>
-
