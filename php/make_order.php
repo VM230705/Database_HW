@@ -9,6 +9,7 @@ if (!isset($_SESSION['account']) || $_SESSION['logged'] != true){
 try{
     $ordered = $_REQUEST['activitiesArray'];
     $shop_name = $_REQUEST['shopName'];
+    $delivery_fee = $_REQUEST['deliveryFee'];
     $current_oid = 0;
     $current_tid = 0;
     $account = $_SESSION["account"];
@@ -45,6 +46,7 @@ try{
     foreach ($ordered as $meal) {
         $total_price += $meal[1] * $meal[2];
     }
+    $total_price += $delivery_fee;
     $sql = "
         INSERT INTO transaction (TID, OID, account, shopname, price, time, type)
         VALUES (:TID, :OID, :account, :shopname, :price, :time, :type)";
@@ -88,10 +90,35 @@ try{
             ':mealname'=>$name, ':price'=>$price, ':quantity'=>$quantity, ':subtotal'=>$subtotal, 
             ':status'=>$status, ':start'=>$start, ':end'=>$end, ':distance'=>$distance];
         $stmt->execute($datas);
+
+        // Update numbers of items
+        // get quantity
+        $stmt = $conn->prepare("select quantity from meal where shopname = :shopname and mealname = :mealname");
+        $stmt->execute(array('mealname'=>$name, 'shopname'=>$shop_name));
+        $row = $stmt->fetch();
+        $current_quantity = $row['quantity'];
+
+        // update
+        $new_quantity = $current_quantity - $quantity;
+        $sql = "UPDATE meal SET quantity=:quantity where mealname = :mealname and shopname = :shopname";
+        $stmt = $conn->prepare($sql);
+        $data = [':quantity'=>$new_quantity, ':mealname'=>$name, ':shopname'=>$shop_name];
+        $stmt->execute($data);
+
         // test
         // echo "\n$now_id, $current_oid, $account, $shop_name, $name, $price, $quantity, Subtotal: $subtotal, $status, $start, $end, $distance";
         $current_id += 1;
     }
+    
+    // // Insert Delivery Fee
+    // $sql = "
+    //     INSERT INTO i_order (id, OID, account, shopname, mealname, price, quantity, subtotal, status, start, end, distance)
+    //     VALUES (:id, :OID, :account, :shopname, :mealname, :price, :quantity, :subtotal, :status, :start, :end, :distance)";
+    // $stmt = $conn->prepare($sql);
+    // $datas = [':id'=>$current_id, ':OID'=>$current_oid, ':account'=>$account, ':shopname'=>$shop_name,
+    //     ':mealname'=>'delivery_fee', ':price'=>$delivery_fee, ':quantity'=>'1', ':subtotal'=>$delivery_fee, 
+    //     ':status'=>'Not Finisted', ':start'=>$time, ':end'=>null, ':distance'=>$distance];
+    // $stmt->execute($datas);
 
     // Update user wallet
     $new_balance = $_SESSION['balance'] - $total_price;
@@ -100,6 +127,7 @@ try{
     $stmt = $conn->prepare($sql);
     $data = [':account'=>$account, ':balance'=>$new_balance];
     $stmt->execute($data);
+    
     
     // Commit 
     $conn->commit();

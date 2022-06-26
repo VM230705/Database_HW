@@ -34,8 +34,9 @@ try{
         $i = 1;
         foreach ($stmt as $row){
             $time = $row['time'];
+            $type = $row['Type'];
             $trader = $row['shopname'];
-            if ($act == 'Payment'){
+            if ($type == 'Payment'){
                 $amount = -$row['price'];
             }
             else{

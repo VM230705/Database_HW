@@ -155,7 +155,7 @@
 
   <!-- HW3 -->
   <!-- Get order information and check -->
-  <script type="text/javascript" src="scripts/make_order.js"></script>
+  <script type="text/javascript" src="scripts/home_order.js"></script>
   <script type="text/javascript" src="scripts/add_recharge.js"></script>
   <script type="text/javascript" src="scripts/transaction_record.js"></script>
 

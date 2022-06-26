@@ -3,6 +3,8 @@ var meal_list = [];
 var ordered = [];
 var valid = false;
 var current_shop = "";
+var total_price = 0;
+var delivery_fee = 0;
 
 // get order items
 function get_order(shop_name){
@@ -88,8 +90,20 @@ function check_order_info(ordered, shop_name, total){
             tbody.appendChild(item_tr);
         }
     
-        total_p.appendChild(document.createTextNode(`${total}`));
+
+        total_p.appendChild(document.createTextNode(`Subtotal: ${total}`));
         current_shop = shop_name;
+        $.ajax({
+            type: "POST",
+            url: "php/delivery_fee.php",
+            data: { shopName: `${current_shop}` },
+            success: function(results) {
+                delivery_fee = Number.parseInt(results);
+                total = Number.parseInt(results) + Number.parseInt(total);
+                total_price = total;
+                total_p.appendChild(document.createTextNode(`\nDelivery fee: ${delivery_fee} Total: ${total}`));
+            }
+        });
         $('#check-order-info').modal('show');
     }
 }
@@ -98,15 +112,22 @@ function check_order_info(ordered, shop_name, total){
 function start_transaction(){
     // Get the ordered array and pass to backend
     console.log(ordered);
-    $.ajax({
-        type: "POST",
-        url: "php/make_order.php",
-        data: { activitiesArray: ordered, shopName: `${current_shop}` },
-        success: function(results) {
-             alert(results);
-             location.reload();
-        }
-    });
+    let wallet = document.getElementById('user_balance').innerHTML;
+    wallet = Number.parseInt(wallet);
+    if (total_price <= wallet){
+        $.ajax({
+            type: "POST",
+            url: "php/make_order.php",
+            data: { activitiesArray: ordered, shopName: `${current_shop}`, deliveryFee: delivery_fee },
+            success: function(results) {
+                 alert(results);
+                 location.reload();
+            }
+        });
+    }
+    else{
+        alert("You don't have enough money !!");
+    }
 }
 
 // store current item to global variable to summarize order
