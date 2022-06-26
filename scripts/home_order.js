@@ -104,6 +104,9 @@ function check_order_info(ordered, shop_name, total){
                 if (delivery_type == 'pick-up'){
                     delivery_fee = 0;
                 }
+                else if (delivery_fee < 10){
+                    delivery_fee = 10;
+                }
                 total = delivery_fee + Number.parseInt(total);
                 total_price = total;
                 total_p.appendChild(document.createTextNode(`\nDelivery fee: ${delivery_fee} Total: ${total}`));
