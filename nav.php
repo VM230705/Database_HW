@@ -159,6 +159,10 @@
   <script type="text/javascript" src="scripts/add_recharge.js"></script>
   <script type="text/javascript" src="scripts/transaction_record.js"></script>
 
+  <!-- shop order cancel/done -->
+  <script type="text/javascript" src="scripts/shop_order.js"></script>
+  <script type="text/javascript" src="scripts/cancel_done.js"></script>
+
   <title>Hello, world!</title>
 </head>
 
@@ -930,7 +934,7 @@ if($page<$pages){
                           $count = $count + 1;
                 ?> 
                   <th scope="row"><?php echo $count;?></th>
-		  <td><img src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($row['picture']); ?>" " style = "width:40%;" with="50" heigh="10" alt="<?php echo $row['mealname']?>"></td>
+                  <td><img src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($row['picture']); ?>"  style = "width:40%;" with="50" heigh="10" alt="<?php echo $row['mealname']?>"></td>
                   <td><?php echo $row['mealname']?></td>
                   <td><?php echo $row['price']?> </td>
                   <td><?php echo $row['quantity']?></td>
@@ -985,10 +989,43 @@ if($page<$pages){
       </div>
       </div>
 
+      <div id="menu3" class="tab-pane fade">
+        <!--import script tag to check sql by php-->
+        <br/>
+        <label class="control-label col-sm-1" for="status_shop_order" >Status</label>
+        <div class="col-sm-5">
+          <select class="form-control" id="status_shop_order" name="<?php echo $shopname ?>" onchange="shop_order(this.getAttribute('name'));" onfocus="this.selectedIndex = -1;">
+            <option selected>ALL</option>
+            <option>Finished</option>
+            <option>Not Finished</option>
+            <option>Cancel</option>
+          </select>
+        </div>
 
-       <!--Shop Area-->
+        <div class="row">
+          <div class="  col-xs-8">
+            <table class="table" style=" margin-top: 15px;">
+              <thead>
+                <tr>
+                  <th scope="col">OrderID</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Start</th>
+                  <th scope="col">End</th>
+                  <th scope="col">Shop Name</th>
+                  <th scope="col">Total Price</th>
+                  <th scope="col">Order Details</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody id="shop_order_tbody">
+              
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
   <div id="menu4" class="tab-pane fade">
-    <!--Register Shop-->
     <h3> Transaction Record </h3>
     <div class="row" id="hide3">
       <div class="  col-xs-8">
@@ -1060,7 +1097,7 @@ if($page<$pages){
       
       return false;
       }
-
+      
       // function hidemenu(){
       //   alert("hidemenu")
       //   var shoparea = document.getElementById("menu1");
@@ -1099,6 +1136,8 @@ else{
         </script>";
 }
 ?>
+
+
   <!-- Option 2: Separate Popper and Bootstrap JS -->
   <!--
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
