@@ -99,7 +99,12 @@ function check_order_info(ordered, shop_name, total){
             data: { shopName: `${current_shop}` },
             success: function(results) {
                 delivery_fee = Number.parseInt(results);
-                total = Number.parseInt(results) + Number.parseInt(total);
+                let delivery_item = document.getElementById('delivery-type');
+                let delivery_type = delivery_item.options[delivery_item.selectedIndex].value;
+                if (delivery_type == 'pick-up'){
+                    delivery_fee = 0;
+                }
+                total = delivery_fee + Number.parseInt(total);
                 total_price = total;
                 total_p.appendChild(document.createTextNode(`\nDelivery fee: ${delivery_fee} Total: ${total}`));
             }
