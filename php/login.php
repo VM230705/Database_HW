@@ -4,8 +4,8 @@ session_start();
 $_SESSION['logged'] = false;
 
 // Process and return if the registeration is success
-$account = $_REQUEST['account'];
-$password = $_REQUEST['password'];
+$account =  $_REQUEST['account'];
+$password =  $_REQUEST['password'];
 
 // connect to database
 $conn = require_once "../db_account/config.php";
@@ -27,6 +27,7 @@ try {
         $_SESSION['phone'] = $row['phone'];
         $_SESSION['latitude'] = $row['latitude'];
         $_SESSION['longitude'] = $row['longitude'];
+        $_SESSION['balance'] = $row['balance'];
 
         echo "
         <script>

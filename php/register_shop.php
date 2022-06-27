@@ -17,14 +17,14 @@ function isValidLongitude($longitude){
 
     /** connect to database */
     $host='localhost';
-    $username='root';
-    $password='DBHW2';
-    $dbname='db_hw';
-    //$dbname='db_hw2';
+    //$username='root';
+    //$password='DBHW2';
+    //$dbname='db_hw';
+    $dbname='db_hw2';
     //$dbusername='root';
-    //$username='eric';
+    $username='eric';
     //$dbpassword='DBHW2';
-    //$password='eric';
+    $password='eric';
 
     $conn = mysqli_connect($host, $username, $password, $dbname);
     

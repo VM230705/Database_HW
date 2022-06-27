@@ -2,10 +2,10 @@
     // connect to database
     $host='localhost';
     $username='root';
-    //$username='eric';
-    $password='DBHW2';
-    //$password='eric';
-    $dbname='db_hw';
+    $username='eric';
+    //$password='DBHW2';
+    $password='eric';
+    $dbname='db_hw2';
 
     $conn = mysqli_connect($host, $username, $password, $dbname);
     

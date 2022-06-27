@@ -150,6 +150,9 @@
   <script type="text/javascript" src="scripts/register_shop.js"></script>
   <!-- Add meal into database -->
   <script type="text/javascript" src="scripts/addmeal.js"></script>
+
+  <script src="scripts/chooseorder.js"></script>
+  <script src="scripts/allcancel.js"></script>
   
   <title>Hello, world!</title>
 </head>
@@ -170,6 +173,10 @@
     <ul class="nav nav-tabs">
       <li class="active"><a href="#home" onclick="hidemenu()">Home</a></li>
       <li><a href="#menu1" onclick="hidehome()">shop</a></li>
+      <li><a href="#myorder" onclick="choose_order()">My Order</a><li>
+      <li><a href="#shoporder">Shop Order</a><li>
+      <li><a href="#transactionrecord">Tranaction Record</a><li>
+      <li><a href="#logout">Logout</a><li>
 
 
     </ul>
@@ -208,7 +215,7 @@
 
 
             <!--  -->
-            walletbalance: 100
+            walletbalance: <?php echo $_SESSION['balance']?>
             <!-- Modal -->
             <button type="button " style="margin-left: 5px;" class=" btn btn-info " data-toggle="modal"
               data-target="#myModal">Add value</button>
@@ -924,7 +931,256 @@ if($page<$pages){
       </div>
       </div>
 
-  <!-- Option 1: Bootstrap Bundle with Popper -->
+  
+  
+  
+  
+  
+  <div id="myorder" class="tab-pane fade">
+    <!-- <form method = "post"> -->
+      
+      <div class=" row  col-xs-8">           
+        <label class="control-label col-sm-1" for="Status">Status</label>
+        
+        <!-- <button type="submit" style="margin-left: 18px;"class="btn btn-primary" id = 'search_btn'>Search</button> -->
+ 
+        <div class="col-sm-5">
+          <!-- <select class="form-control" id="status", name='status'> -->
+          <select class="form-control" id="order_choose"name="Status" onchange="choose_order()">
+            <option>All</option>
+            <option >Not Finished </option>
+            <option>Finished</option>
+            <option >Canceled</option>
+            <!-- <option value="Not Finished">Not Finished </option>
+            <option value="Finished">Finished</option>
+            <option value='Canceled'>Canceled</option> -->
+          </select>
+        </div>
+        <!-- <input style=" margin-top: 15px;" type="submit" class="btn btn-primary" id="search_btn" name="search_btn" value="Search"> -->
+      </div>
+      
+    <!-- </form> -->
+
+    <div class="row">
+      <div class="  col-xs-16">
+        <table class="table" style=" margin-top: 15px;">
+          <thead>
+            <tr>
+              <th scope="col"></th>    
+              <th scope="col">Order ID</th>
+              <th scope="col">Status</th>
+              <th scope="col">Start</th>
+              <th scope="col">End</th>
+              <th scope="col">Shop name</th>
+              <th scope="col">Total Price</th>
+              <th scope="col">Order Details</th>
+              <th scope="col">Actions</th>
+
+            </tr>
+          </thead>
+          <tbody id="myorder-tbody">
+
+          </tbody>
+          <!-- <tbody> -->
+                <?php
+                  if(!isset($_POST['status'])){
+                    $status='All';
+                  } 
+                  else $status=$_POST['status'];
+
+                  $conn = require "db_account/config.php";
+                  if($status=='All'){
+                    $stmt=$conn->prepare("select * from i_order where account=:account;");
+                    $stmt->execute(array('account' => $name));
+                  }
+                  else{
+                    $stmt=$conn->prepare("select * from i_order where account=:account and status=:status");
+                    $stmt->execute(array('account' => $name, 'status' => $status));
+                  }
+
+                  $a = array();
+                  // echo '<form action ="php/cancel.php" id="bigdeleteorder" name="bigdeleteorder" method="post">';
+                  
+                  if($stmt->fetchColumn()>0){
+                    if($status=='All'){
+                      $stmt=$conn->prepare("select OID, status, start, end, shopname, price, sum(subtotal) as total, count(OID) as num, distance from i_order where account=:account Group BY OID;");
+                      $stmt->execute(array('account' => $name));
+                    }
+                    else{
+                      $stmt=$conn->prepare("select OID, status, start, end, shopname, price, sum(subtotal) as total, count(OID) as num, distance from i_order where account=:account and status =:status Group BY OID;");
+                      $stmt->execute(array('account' => $name, 'status' => $status));
+                    }
+                    $result=$stmt->fetchAll();
+                    $i=0;
+                    $oid_array = [];
+
+                    foreach ($result as $row){
+                      $i+=1;
+                      $nstatus=$row['status'];
+                      $start = $row['start'];
+                      $end = $row['end'];
+                      $shop = $row['shopname'];
+                      $price = $row['total'];
+                      $OID = $row['OID'];
+                      $distance=$row['distance'];
+                      $flag = False;
+                      array_push($a, array($shop, $OID));
+                      // echo <<<EOT
+                      //   <tr>
+                      //   EOT;
+                      //   if($nstatus=="Not Finished"){
+                      //     echo <<<EOT
+                      //     <th>
+                      //     <input type="checkbox" name="checkbox[]" value="$OID" id="checkbox_$$OID" >
+                      //     </th>
+                      //     EOT;
+                      //   }else{
+                      //     echo <<< EOT
+                      //     <th>
+                      //     </th>
+                      //     EOT;
+                      //   }
+                      // echo <<<EOT
+                      //   <th scope="row">$i</th>
+                      //   <td>$nstatus</td>
+                      //   <td>$start</td>
+                      //   <td>$end</td>
+                      //   <td>$shop</td>
+                      //   <td>$price</td>
+                      
+                      //   <td><button type="button" class="btn btn-info " data-toggle="modal" data-target="#$shop$OID">Open menu</button></td>
+                      //   EOT;
+                      //   if($nstatus=="Not Finished"){
+                      //     echo <<<EOT
+                      //     <td>
+                      //     <form action="php/cancel.php" method="post" id="login_form$i">
+                      //     <input  type="hidden" name="cancel" value=$OID>
+                      //     <input type="submit" class="btn btn-danger" id = "cancel" value="Cancel" onclick="return confirm('Are you sure to cancel the order?');">
+                      //     </form>
+                      //     </td>
+                      //     EOT;
+                      //   }
+                      //   echo '</tr>';
+                    }
+                  }
+                  // echo "</form>";
+                ?>
+          <!-- </tbody> -->
+            </table>
+            <input type="submit" class="btn btn-danger" id = "cancel" value="ALL Cancel" onclick="allcancel()">
+            <script id="allcancel_script"></script>
+      </div>
+    </div>
+    <?php
+                
+            for($i=0; $i<sizeof($a); $i++){
+              $shop = $a[$i][0];
+              $oid = $a[$i][1];
+              echo <<<EOT
+              <div class="modal fade" id="$shop$oid"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Order</h4>
+                    </div>
+                    <div class="modal-body">
+                    <!--  -->
+              
+                    <div class="row">
+                      <div class="  col-xs-12">
+                        <table class="table" style=" margin-top: 15px;">
+                          <thead>
+                            <tr>
+                              <th scope="col">Picture</th>
+                            
+                              <th scope="col">meal name</th>
+                          
+                              <th scope="col">price</th>
+                              <th scope="col">Order Quantity</th>
+                            
+                            </tr>
+                          </thead>
+              EOT;
+              $stmt=$conn->prepare("select mealname, shopname,  price, quantity, subtotal, distance from i_order where OID=:OID;");
+              $stmt->execute(array('OID' => $oid));
+              $result=$stmt->fetchAll();
+              $sum=0;
+              foreach($result as $srow){
+                $mealname = $srow['mealname'];
+                $shopname = $srow['shopname'];
+                $price = $srow['price'];
+                $quantity = $srow['quantity'];
+                $distance = $srow['distance'];
+                $sum+=$srow['subtotal'];
+                $stmt=$conn->prepare("select picture from meal where mealname=:mealname and shopname =:shopname");
+                $stmt->execute(array('mealname' => $mealname,'shopname' => $shopname));
+                $result2 = $stmt->fetchALL();
+
+                
+                echo '<tr>';
+                echo '<td><img src="data:image/jpg;charset=utf8;base64,'.base64_encode($result2[0]['picture']).'" style="width: 40%;" with="50" heigh="10" alt='.$mealname.'></td>';
+                echo '<td>'.$mealname.'</td>';
+                echo '<td>'.$price.'</td>';
+                echo '<td>'.$quantity.'</td>';
+                echo '</tr>';
+                
+            }
+              $delivery_f = intval($distance/100);
+              if($delivery_f<10){
+                $delivery_f=10;
+                $f=$sum+10;
+              }
+              else{
+                $f=$sum+$delivery_f;
+              }
+             
+              echo <<<EOT
+                          <tbody>
+                          
+
+                          </tbody>
+                        </table>
+                      </div>
+
+                    </div>
+                    
+
+                    <!--  -->
+                    <div style="text-align:right;"><font size=4>Subtotal: $$sum</font>
+                    <br>
+                    <font size=2>Delivery fee: $$delivery_f</font>
+                    <br><br>
+                    <font size=4>Total Price: $$f</font></div>
+                    </div>
+                    
+                  </div>
+                  
+                </div>
+              </div>
+              EOT;
+            }
+          ?>
+            
+
+              <!-- Modal -->
+  </div>
+
+
+  <div id="shoporder" class="tab-pane fade">
+    
+  </div>
+
+  <div id="transactionrecord" class="tab-pane fade">
+    
+  </div>
+
+  <div id="logout" class="tab-pane fade">
+    
+  </div>
+      <!-- Option 1: Bootstrap Bundle with Popper -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script> -->
   <script>
     $(document).ready(function () {
