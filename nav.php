@@ -721,7 +721,7 @@
               
               <label>
               Type: 
-              <select id="delivery-type">
+              <select id="delivery-type-'.$s['shopname'].'">
               <option value="delivery">Delivery</option>
               <option value="pick-up">Pick-Up</option>
               </select>
@@ -998,6 +998,7 @@ if($page<$pages){
         <option>Payment</option>
         <option>Collection</option>
         <option>Recharge</option>
+        <option>Refund</option>
       </select>
       </div>
       <div class="  col-xs-8">
