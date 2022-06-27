@@ -31,8 +31,7 @@
     </script>
     ";
   }
-  $query = "SELECT shopname, ST_AsText(location) AS location, category, account FROM shop WHERE account = '$account'";
-  $have_shop = $conn->query($query);
+  
   //initialse $_SESSION['s_xxx']
   $_SESSION['s_shopname'] = isset($_SESSION['s_shopname'])?$_SESSION['s_shopname'] :false;
   $_SESSION['s_shopname_d'] = isset($_SESSION['s_shopname_d'])?$_SESSION['s_shopname_d'] :false;
@@ -127,7 +126,15 @@
     $_SESSION['s_distance'] = false;
     $_SESSION['s_distance_d'] = false;
   }  
-
+  // shop 
+  $query = "SELECT shopname, ST_AsText(location) AS location, category, account FROM shop WHERE account = '$account'";
+  $have_shop = $conn->query($query);
+  // shop order(used for default)
+  $shop_order_paramter = $conn->query($query);
+  if($shop_order_paramter->num_rows>0){ 
+    $shop_order_name = $shop_order_paramter->fetch_assoc();
+    $shopname_order = $shop_order_name['shopname'];;
+  }
 ?>
 <!doctype html>
 <html lang="en">
@@ -166,7 +173,7 @@
   <title>Hello, world!</title>
 </head>
 
-<body>
+<body id="body">
  
   <nav class="navbar navbar-inverse">
     <div class="container-fluid">
@@ -177,13 +184,13 @@
 
     </div>
   </nav>
-  <div class="container">
+  <div class="container" id="container">
 
     <ul class="nav nav-tabs">
-      <li class="active"><a href="#home" onclick="hidemenu()">Home</a></li>
-      <li><a href="#menu1" onclick="hidehome()">shop</a></li>
-      <li><a href="#menu2" onclick="hidehome()">My Order</a></li>
-      <li><a href="#menu3" onclick="hidehome()">Shop Order</a></li>
+      <li class="active"><a href="#home" onclick="">Home</a></li>
+      <li><a href="#menu1" onclick="">shop</a></li>
+      <li><a href="#menu2" onclick="">My Order</a></li>
+      <li><a href="#menu3" onclick="shop_order('<?php echo $shopname_order ?>')">Shop Order</a></li>
       <li><a href="#menu4" onclick="transaction_record()">Transaction Record</a></li>
 
 
@@ -995,7 +1002,7 @@ if($page<$pages){
         <label class="control-label col-sm-1" for="status_shop_order" >Status</label>
         <div class="col-sm-5">
           <select class="form-control" id="status_shop_order" name="<?php echo $shopname ?>" onchange="shop_order(this.getAttribute('name'));" onfocus="this.selectedIndex = -1;">
-            <option selected>ALL</option>
+            <option>ALL</option>
             <option>Finished</option>
             <option>Not Finished</option>
             <option>Cancel</option>
@@ -1058,7 +1065,7 @@ if($page<$pages){
 
   <!-- Option 1: Bootstrap Bundle with Popper -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script> -->
-  <script>
+  <script id="script">
     $(document).ready(function () {
       $(".nav-tabs a").click(function () {
         $(this).tab('show');
@@ -1122,9 +1129,10 @@ if($page<$pages){
       // }
   </script>
 
+<script id="order_detail"></script>
 <?php   
 
-if($have_shop->num_rows>0){
+if($have_shop->num_rows > 0){
   echo "<script>
         document.getElementById('register_btn').disabled = true;
         </script>

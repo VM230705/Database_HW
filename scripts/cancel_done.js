@@ -3,13 +3,23 @@ function cancel_done(request){
     var ele_id = request.getAttribute("id");
     var data = new FormData();
     var start_id = "start_" + OID;
-    var end_id = "end_" + OID; 
-    var end_value = document.getElementById(end_id).innerHTML;
     var start_value = document.getElementById(start_id).innerHTML;
-    if(end_value){
-        alert("This order has been finished or canceled.")
-        return;
-    }
+    // var end_id = "end_" + OID; 
+    // var end_value = document.getElementById(end_id).innerHTML;
+    // if(end_value == ""){
+    //     console.log("end val = ''");
+    // }
+    // else if(end_value){
+    //     console.log("end val 2");
+    // }
+    // else{
+    //     console.log("end val 3");
+    // }
+    // if(end_value!=""){
+    //     alert(end_value);
+    //     alert("This order has been finished or canceled.");
+    //     return;
+    // }
 
     data.append("OID", OID);
     data.append("ele_id", ele_id);

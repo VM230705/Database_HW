@@ -9,6 +9,7 @@
     $OID = $_POST['OID'];
     $ele_id = $_POST["ele_id"];
     $start = $_POST["start"];
+    
     if($ele_id == $OID."_cancel"){
         // echo "cancel\n";
         $sql =  "UPDATE i_order SET status = 'Cancel', start = ?, end = NOW() WHERE OID = ?";
