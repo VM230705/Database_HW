@@ -37,10 +37,11 @@ foreach($shop_order as $s_order){
 
     $s_order_stmt = $conn->query("SELECT picture from meal where shopname = '$shopname' and mealname = '$mealname'");
 
-    if(is_null($mealname)){
-        $mealname = "(Deleted Meal)";
-    }
+    // if(is_null($mealname)){
+    //     $mealname = "(Deleted Meal)";
+    // }
     // print_r($s_order_stmt);
+    $picture=null;
     if($s_order_stmt->rowCount() != 0){
         
         foreach($s_order_stmt as $meal){

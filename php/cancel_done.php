@@ -25,11 +25,11 @@
 
     // Cancel or Done 
     $total_price = 0;
-    $time = date('Y-m-d h:i:s', time());
+    // $time = date('Y-m-d h:i:s', time());
     $action = "";
 
     $order_meal = [];
-    $orderquery = "SELECT price, quantity, mealname, subtotal, distance, account FROM i_order WHERE OID = $OID";
+    $orderquery = "SELECT price, quantity, mealname, subtotal, distance, account, status FROM i_order WHERE OID = $OID";
     $o_stmt = $conn->query($orderquery);
     if($o_stmt->num_rows>0){ 
         while($meal = $o_stmt->fetch_assoc()){
@@ -48,15 +48,19 @@
             $quantity = $o_meal['quantity'];
             $subtotal = $o_meal['subtotal'];
             $o_account = $o_meal['account'];
+            $status = $o_meal['status'];
             $delivery_fee = intval($o_meal['distance'] / 100);
             $total_price += $subtotal;
+            if($status != 'Not Finished'){
+                die("The order is already done or canceled.");
+            }
         }
         if($delivery_fee < 10 && $delivery_fee!=0){
             $delivery_fee = 10;
         }
         $total_price += $delivery_fee;
 
-        $sql =  "UPDATE i_order SET status = 'Cancel', start = '$start', end = '$time' WHERE OID = $OID";
+        $sql =  "UPDATE i_order SET status = 'Canceled', start = '$start', end = current_timestamp() WHERE OID = $OID";
     }
     else if($ele_id == $OID."_done"){
         // check meal exist and quantity enough
@@ -69,6 +73,11 @@
             $subtotal = $o_meal['subtotal'];
             $delivery_fee = intval($o_meal['distance'] / 100);
             $o_account = $o_meal['account'];
+            $status = $o_meal['status'];
+            if($status != 'Not Finished'){
+                die("The order is already done or canceled.");
+            }
+
             $mealquery = "SELECT price, quantity, mealname FROM meal WHERE shopname = '$shopname' and mealname = '$mealname'";
             $m_stmt = $conn->query($mealquery);
             if($o_stmt->num_rows>0){ 
@@ -88,8 +97,7 @@
             $delivery_fee = 10;
         }
         $total_price += $delivery_fee;
-        
-        $sql =  "UPDATE i_order SET status = 'Finished', start = '$start', end = '$time' WHERE OID = $OID";
+        $sql =  "UPDATE i_order SET status = 'Finished', start = '$start', end = current_timestamp() WHERE OID = $OID";
     }
     else{
         die("Something Wrong\n");
@@ -104,16 +112,17 @@
     }
 
 
-    // update transaction
+    // obtain transaction id
     $t_query = "SELECT MAX(TID) as max_tid FROM transaction";
     $t_stmt = $conn->query($t_query);
     $row = $t_stmt->fetch_assoc();
     $current_tid = $row['max_tid'] + 1;
-    $time = date('Y-m-d h:i:s', time());
+    // $time = date('Y-m-d h:i:s', time());
     if($action == "done"){
+        // insert transaction
         // 這裡的shopname 要存買家的user account
         $i_query = "INSERT INTO transaction (TID, OID, account, shopname, price, time, type)
-            VALUES ($current_tid, $OID, '$account', '$o_account', $total_price, '$time', 'Collection')";
+            VALUES ($current_tid, $OID, '$account', '$o_account', $total_price, current_timestamp(), 'Collection')";
         if ($conn->query($i_query) === TRUE) {
             // echo "New record created successfully";
         } 
@@ -121,6 +130,8 @@
             die("Error: " . $i_query . "<br>" . $conn->error);
         }
 
+
+        //update user wallet
         $u_query = "select balance from user where account = '$account';";
         $u_stmt = $conn->query($u_query);
         
@@ -137,11 +148,13 @@
             }
             $_SESSION['balance'] = $newbalance;
         }
+
         
     }
     else if($action == "cancel"){
+        // insert transaction
         $i_query = "INSERT INTO transaction (TID, OID, account, shopname, price, time, type)
-            VALUES ($current_tid, $OID, '$o_account', '$shopname', $total_price, '$time', 'Refund')";
+            VALUES ($current_tid, $OID, '$o_account', '$shopname', $total_price, current_timestamp(), 'Refund')";
         if ($conn->query($i_query) === TRUE) {
             // echo "New record created successfully";
         } 
@@ -149,6 +162,8 @@
             die("Error: " . $i_query . "<br>" . $conn->error);
         }
 
+
+        //update user wallet
         $u_query = "select balance from user where account = '$o_account';";
         $u_stmt = $conn->query($u_query);
 
@@ -164,6 +179,28 @@
                 die("Error: " . $b_query . "<br>" . $conn->error);
             }
         }
+
+        //update meal quantity
+        foreach($order_meal as $o_meal_2){
+            $mealname = $o_meal_2['mealname'];
+            $quantity = $o_meal_2['quantity'];
+            $m_query = "SELECT quantity FROM meal WHERE shopname = '$shopname' and mealname = '$mealname'";
+            $m_stmt = $conn->query($m_query);
+            if($m_stmt->num_rows>0){ 
+                while($meal = $m_stmt->fetch_assoc()){
+                    $newquantity = $meal['quantity'] + $quantity;
+                    $q_query = "UPDATE meal SET quantity = $newquantity  WHERE shopname = '$shopname' and mealname = '$mealname'";
+                    if ($conn->query($q_query) === TRUE) {
+                        // echo "quantity update successfully";
+                    } 
+                    else {
+                        die("Error: " . $q_query . "<br>" . $conn->error);
+                    }
+                }
+            }
+        }
+        
+        
     }
     echo "Successfully Update! Do you want to reload the pages?";
 ?>

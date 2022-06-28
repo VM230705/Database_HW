@@ -90,11 +90,11 @@ try{
         // Insert
         $sql = "
             INSERT INTO i_order (id, OID, account, shopname, mealname, price, quantity, subtotal, status, start, end, distance)
-            VALUES (:id, :OID, :account, :shopname, :mealname, :price, :quantity, :subtotal, :status, :start, :end, :distance)";
+            VALUES (:id, :OID, :account, :shopname, :mealname, :price, :quantity, :subtotal, :status, current_timestamp(), :end, :distance)";
         $stmt = $conn->prepare($sql);
         $datas = [':id'=>$now_id, ':OID'=>$current_oid, ':account'=>$account, ':shopname'=>$shop_name,
             ':mealname'=>$name, ':price'=>$price, ':quantity'=>$quantity, ':subtotal'=>$subtotal, 
-            ':status'=>$status, ':start'=>$start, ':end'=>$end, ':distance'=>$distance];
+            ':status'=>$status, ':end'=>$end, ':distance'=>$distance];
         $stmt->execute($datas);
 
         // Update numbers of items

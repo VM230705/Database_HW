@@ -26,9 +26,9 @@ try{
         $sql = "SELECT OID, status, start, end, shopname, mealname, price, quantity, sum(subtotal) as total, 
             count(OID) as num, distance  FROM i_order WHERE shopname = :shopname and status = 'Not Finished' GROUP BY OID ";
     }
-    else if ($act == 'Cancel'){
+    else if ($act == 'Canceled'){
         $sql = "SELECT OID, status, start, end, shopname, mealname, price, quantity, sum(subtotal) as total, 
-            count(OID) as num, distance  FROM i_order WHERE shopname = :shopname and status = 'Cancel' GROUP BY OID ";
+            count(OID) as num, distance  FROM i_order WHERE shopname = :shopname and status = 'Canceled' GROUP BY OID ";
     }
     $stmt = $conn->prepare($sql);
     $data = [':shopname'=>$shopname];
@@ -54,9 +54,20 @@ try{
             }
             $total_price = $subtotal + $delivery_fee;
             $num = $row['num'];
+            $append = "<tr id='tr_$OID'>";
+            if($status == "Not Finished"){
+                $append = $append . "
+                <th>
+                    <input type='checkbox' class='s_checkbox' name='s_checkbox[]' value='$OID' id='s_checkbox_$OID'>
+                </th>";
+            }
+            else{
+                $append = $append . "
+                <th>
+                </th>";
+            }
             
-            
-            $append = "<tr id='tr_$OID'>
+            $append = $append . "
             <th scope='row' id='OID_$OID'>$i</th>
             <td id='status_$OID'> $status</td>
             <td id='start_$OID'> $start</td>

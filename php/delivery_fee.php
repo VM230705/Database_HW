@@ -32,6 +32,9 @@ try{
 
     // Calculate fee
     $dilivery_fee = $distance / 100;
+    if($dilivery_fee<10){
+        $dilivery_fee=10;
+    }
     echo "$dilivery_fee";
 }
 catch (Exception $e){

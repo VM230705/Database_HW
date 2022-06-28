@@ -166,9 +166,14 @@
   <script type="text/javascript" src="scripts/add_recharge.js"></script>
   <script type="text/javascript" src="scripts/transaction_record.js"></script>
 
+  <!-- Myorder -->
+  <script src="scripts/chooseorder.js"></script>
+  <script src="scripts/allcancel.js"></script>
   <!-- shop order cancel/done -->
   <script type="text/javascript" src="scripts/shop_order.js"></script>
   <script type="text/javascript" src="scripts/cancel_done.js"></script>
+  <script type="text/javascript" src="scripts/multiple_cancel.js"></script>
+  <script type="text/javascript" src="scripts/multiple_done.js"></script>
 
   <title>Hello, world!</title>
 </head>
@@ -189,7 +194,7 @@
     <ul class="nav nav-tabs">
       <li class="active"><a href="#home" onclick="">Home</a></li>
       <li><a href="#menu1" onclick="">shop</a></li>
-      <li><a href="#menu2" onclick="">My Order</a></li>
+      <li><a href="#menu2" onclick="choose_order()">My Order</a></li>
       <li><a href="#menu3" onclick="shop_order('<?php echo $shopname_order ?>')">Shop Order</a></li>
       <li><a href="#menu4" onclick="transaction_record()">Transaction Record</a></li>
 
@@ -997,6 +1002,207 @@ if($page<$pages){
       </div>
       </div>
 
+      <div id="menu2" class="tab-pane fade">
+    <!-- <form method = "post"> -->
+      
+      <div class=" row  col-xs-8">           
+        <label class="control-label col-sm-1" for="Status">Status</label>
+        
+        <!-- <button type="submit" style="margin-left: 18px;"class="btn btn-primary" id = 'search_btn'>Search</button> -->
+ 
+        <div class="col-sm-5">
+          <!-- <select class="form-control" id="status", name='status'> -->
+          <select class="form-control" id="order_choose"name="Status" onchange="choose_order()">
+            <option>All</option>
+            <option >Not Finished </option>
+            <option>Finished</option>
+            <option >Canceled</option>
+            <!-- <option value="Not Finished">Not Finished </option>
+            <option value="Finished">Finished</option>
+            <option value='Canceled'>Canceled</option> -->
+          </select>
+        </div>
+        <!-- <input style=" margin-top: 15px;" type="submit" class="btn btn-primary" id="search_btn" name="search_btn" value="Search"> -->
+      </div>
+      
+    <!-- </form> -->
+
+    <div class="row">
+      <div class="  col-xs-16">
+        <table class="table" style=" margin-top: 15px;">
+          <thead>
+            <tr>
+              <th scope="col"></th>    
+              <th scope="col">Order ID</th>
+              <th scope="col">Status</th>
+              <th scope="col">Start</th>
+              <th scope="col">End</th>
+              <th scope="col">Shop name</th>
+              <th scope="col">Total Price</th>
+              <th scope="col">Order Details</th>
+              <th scope="col">Actions</th>
+
+            </tr>
+          </thead>
+          <tbody id="myorder-tbody">
+
+          </tbody>
+          <!-- <tbody> -->
+                <?php
+                  if(!isset($_POST['status'])){
+                    $status='All';
+                  } 
+                  else $status=$_POST['status'];
+
+                  $conn = require "db_account/config.php";
+                  if($status=='All'){
+                    $stmt=$conn->prepare("select * from i_order where account=:account;");
+                    $stmt->execute(array('account' => $account));
+                  }
+                  else{
+                    $stmt=$conn->prepare("select * from i_order where account=:account and status=:status");
+                    $stmt->execute(array('account' => $account, 'status' => $status));
+                  }
+
+                  $a = array();
+                  // echo '<form action ="php/cancel.php" id="bigdeleteorder" name="bigdeleteorder" method="post">';
+                  
+                  if($stmt->fetchColumn()>0){
+                    if($status=='All'){
+                      $stmt=$conn->prepare("select OID, status, start, end, shopname, price, sum(subtotal) as total, count(OID) as num, distance from i_order where account=:account Group BY OID;");
+                      $stmt->execute(array('account' => $account));
+                    }
+                    else{
+                      $stmt=$conn->prepare("select OID, status, start, end, shopname, price, sum(subtotal) as total, count(OID) as num, distance from i_order where account=:account and status =:status Group BY OID;");
+                      $stmt->execute(array('account' => $account, 'status' => $status));
+                    }
+                    $result=$stmt->fetchAll();
+                    $i=0;
+                    $oid_array = [];
+
+                    foreach ($result as $row){
+                      $i+=1;
+                      $nstatus=$row['status'];
+                      $start = $row['start'];
+                      $end = $row['end'];
+                      $shop = $row['shopname'];
+                      $price = $row['total'];
+                      $OID = $row['OID'];
+                      $distance=$row['distance'];
+                      $flag = False;
+                      array_push($a, array($shop, $OID));
+                    }
+                  }
+                 
+                ?>
+          <!-- </tbody> -->
+            </table>
+            <input type="submit" class="btn btn-danger" id = "cancel" value="ALL Cancel" onclick="allcancel()">
+      </div>
+    </div>
+    <?php
+                
+            for($i=0; $i<sizeof($a); $i++){
+              $shop = $a[$i][0];
+              $oid = $a[$i][1];
+              echo <<<EOT
+              <div class="modal fade" id="$shop$oid"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Order</h4>
+                    </div>
+                    <div class="modal-body">
+                    <!--  -->
+              
+                    <div class="row">
+                      <div class="  col-xs-12">
+                        <table class="table" style=" margin-top: 15px;">
+                          <thead>
+                            <tr>
+                              <th scope="col">Picture</th>
+                            
+                              <th scope="col">meal name</th>
+                          
+                              <th scope="col">price</th>
+                              <th scope="col">Order Quantity</th>
+                            
+                            </tr>
+                          </thead>
+              EOT;
+              $stmt=$conn->prepare("select mealname, shopname,  price, quantity, subtotal, distance from i_order where OID=:OID;");
+              $stmt->execute(array('OID' => $oid));
+              $result=$stmt->fetchAll();
+              $sum=0;
+              foreach($result as $srow){
+                $mealname = $srow['mealname'];
+                $shopname = $srow['shopname'];
+                $price = $srow['price'];
+                $quantity = $srow['quantity'];
+                $distance = $srow['distance'];
+                $sum+=$srow['subtotal'];
+
+                $stmt=$conn->prepare("select picture from meal where mealname=:mealname and shopname =:shopname");
+                $stmt->execute(array('mealname' => $mealname,'shopname' => $shopname));
+                $result2 = $stmt->fetchALL();
+                if($result2!=null){
+                  $picture = $result2[0]['picture'];
+                }else{
+                  $picture = null;
+                }
+                
+                echo '<tr>';
+                echo '<td><img src="data:image/jpg;charset=utf8;base64,'.base64_encode($picture).'" style="width: 40%;" with="50" heigh="10" alt='.$mealname.'></td>';
+                echo '<td>'.$mealname.'</td>';
+                echo '<td>'.$price.'</td>';
+                echo '<td>'.$quantity.'</td>';
+                echo '</tr>';
+                
+            }
+              $delivery_f = intval($distance/100);
+              if($delivery_f<10&&$delivery_f!=0){
+                $delivery_f=10;
+                $f=$sum+10;
+              }
+              else{
+                $f=$sum+$delivery_f;
+              }
+             
+              echo <<<EOT
+                          <tbody>
+                          
+
+                          </tbody>
+                        </table>
+                      </div>
+
+                    </div>
+                    
+
+                    <!--  -->
+                    <div style="text-align:right;"><font size=4>Subtotal: $$sum</font>
+                    <br>
+                    <font size=2>Delivery fee: $$delivery_f</font>
+                    <br><br>
+                    <font size=4>Total Price: $$f</font></div>
+                    </div>
+                    
+                  </div>
+                  
+                </div>
+              </div>
+              EOT;
+            }
+          ?>
+            
+
+              <!-- Modal -->
+  </div>
+
+
       <div id="menu3" class="tab-pane fade">
         <!--import script tag to check sql by php-->
         <br/>
@@ -1006,7 +1212,7 @@ if($page<$pages){
             <option>ALL</option>
             <option>Finished</option>
             <option>Not Finished</option>
-            <option>Cancel</option>
+            <option>Canceled</option>
           </select>
         </div>
 
@@ -1015,6 +1221,7 @@ if($page<$pages){
             <table class="table" style=" margin-top: 15px;">
               <thead>
                 <tr>
+                  <th scope="col"></th>
                   <th scope="col">OrderID</th>
                   <th scope="col">Status</th>
                   <th scope="col">Start</th>
@@ -1029,6 +1236,10 @@ if($page<$pages){
               
               </tbody>
             </table>
+            <input type="submit" class="btn btn-danger" id = "multiple_done_btn" value="Multiple Finish" onclick="multiple_done()" style='background-color: #4CAF50;'>
+            <script id="multiple_done_script"></script>
+            <input type="submit" class="btn btn-danger" id = "multiple_cancel_btn" value="Multiple Cancel" onclick="multiple_cancel()">
+            <script id="multiple_cancel_script"></script>
           </div>
         </div>
       </div>
