@@ -1,6 +1,6 @@
 <?php require_once("db_config.php"); ?>
 <?php
-    // print_r($_POST);
+    // Update 
     if(empty($_POST["price"]) && empty($_POST["quantity"])){
         die("Nothing Change");
     }
@@ -14,7 +14,35 @@
     $price = $_POST["price"];
     $quantity = $_POST["quantity"];
     $mealname = $_POST["mealname"];
-    
+    $shopname = $_POST["shopname"];
+
+     // check if there exist unfinished order containing editing meal
+    $status = "Not Finished";
+    $orderquery = "SELECT price, quantity, mealname FROM i_order WHERE shopname = ? and mealname = ? and status = ?";
+    // $o_stmt = $conn->query($orderquery);
+    $o_stmt = $conn->prepare($orderquery);   // avoid sql injection
+    $o_stmt->bind_param("sss", $shopname, $mealname, $status);  // 's' specifies the variable type => 'string'
+    $o_stmt->execute();
+    $o_result = $o_stmt->get_result();
+    if($o_result->num_rows > 0){
+        die("
+        <script>
+            if(confirm('Cannot Update!! Because there exists unfinished order containing this meal!!') == true){
+                location.href = '../nav.php';
+            }
+        </script>");
+    }
+    // if($o_stmt->num_rows>0){ 
+    //     while($meal = $o_stmt->fetch_assoc()){
+    //         array_push($order_meal, $meal);
+    //     }
+    // }
+    // else{
+    //     die("Selection = 0");
+    // }
+
+
+
     /** check if shop name already exist or not */ 
     $sql =  "UPDATE meal SET price = ?, quantity = ? WHERE mealname = ?";
     $stmt = $conn->prepare($sql);   // avoid sql injection

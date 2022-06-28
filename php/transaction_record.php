@@ -8,6 +8,7 @@ if (!isset($_SESSION['account']) || $_SESSION['logged'] != true){
 
 try{
     $act = $_REQUEST['action'];
+    $show_act = $act;
     $account = $_SESSION["account"];
     $return = "";
     $test = 'test';
@@ -26,6 +27,9 @@ try{
     else if ($act == 'Collection'){
         $sql = "SELECT * FROM transaction WHERE account = :account and type = 'Collection'";
     }
+    else if ($act == 'Refund'){
+        $sql = "SELECT * FROM transaction WHERE account = :account and type = 'Refund'";
+    }
     $stmt = $conn->prepare($sql);
     $data = [':account'=>$account];
     $stmt->execute($data);
@@ -42,7 +46,8 @@ try{
             else{
                 $amount = $row['price'];
             }
-            $append = "<tr><th scope='row'>$i</th><td>$act</td><td>$time</td><td>$trader</td><td>$amount</td></tr>";
+            $show_act = $type;
+            $append = "<tr><th scope='row'>$i</th><td>$show_act</td><td>$time</td><td>$trader</td><td>$amount</td></tr>";
             $return = $return . $append;
             $i = $i + 1;
         }

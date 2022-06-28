@@ -36,6 +36,10 @@ foreach($shop_order as $s_order){
     $lastID = $OID;
 
     $s_order_stmt = $conn->query("SELECT picture from meal where shopname = '$shopname' and mealname = '$mealname'");
+
+    if(is_null($mealname)){
+        $mealname = "(Deleted Meal)";
+    }
     // print_r($s_order_stmt);
     if($s_order_stmt->rowCount() != 0){
         

@@ -732,7 +732,7 @@
               
               <label>
               Type: 
-              <select id="delivery-type">
+              <select id="delivery-type-'.$s['shopname'].'">
               <option value="delivery">Delivery</option>
               <option value="pick-up">Pick-Up</option>
               </select>
@@ -963,6 +963,7 @@ if($page<$pages){
                               
                               <div class="modal-body">
                                 <input type="hidden" id="<?php echo $row['mealname']?>" value="<?php echo $row['mealname']?>" name="mealname">
+                                <input type="hidden" id="<?php echo $row['shopname']?>" value="<?php echo $row['shopname']?>" name="shopname">
                                 <div class="row" >
                                   <div class="col-xs-6">
                                     <label for="price-<?php echo $row['mealname']?>"><?php echo $row['price']?></label>
@@ -1042,6 +1043,7 @@ if($page<$pages){
         <option>Payment</option>
         <option>Collection</option>
         <option>Recharge</option>
+        <option>Refund</option>
       </select>
       </div>
       <div class="  col-xs-8">
@@ -1086,8 +1088,11 @@ if($page<$pages){
     }    
     function delete_meal(del_btn_id){
       var mealname = del_btn_id.getAttribute("name");
+      var shopname = '<?php echo $shopname ?>';
       var data = new FormData();
+      console.log("shopname = ", shopname);
       data.append("mealname", mealname);
+      data.append("shopname", shopname);
       var xhr = new XMLHttpRequest();
       if(confirm('Are you sure you want to delete it?') == false){
         return;

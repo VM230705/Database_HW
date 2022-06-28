@@ -5,6 +5,7 @@ var valid = false;
 var current_shop = "";
 var total_price = 0;
 var delivery_fee = 0;
+var delivery_type_global = 'delivery';
 
 // get order items
 function get_order(shop_name){
@@ -98,11 +99,14 @@ function check_order_info(ordered, shop_name, total){
             url: "php/delivery_fee.php",
             data: { shopName: `${current_shop}` },
             success: function(results) {
+                console.log(results);
                 delivery_fee = Number.parseInt(results);
-                let delivery_item = document.getElementById('delivery-type');
+                let delivery_item = document.getElementById(`delivery-type-${shop_name}`);
                 let delivery_type = delivery_item.options[delivery_item.selectedIndex].value;
+                console.log(delivery_type);
                 if (delivery_type == 'pick-up'){
                     delivery_fee = 0;
+                    delivery_type_global = delivery_type;
                 }
                 else if (delivery_fee < 10){
                     delivery_fee = 10;
@@ -110,9 +114,9 @@ function check_order_info(ordered, shop_name, total){
                 total = delivery_fee + Number.parseInt(total);
                 total_price = total;
                 total_p.appendChild(document.createTextNode(`\nDelivery fee: ${delivery_fee} Total: ${total}`));
+                $('#check-order-info').modal('show');  
             }
         });
-        $('#check-order-info').modal('show');
     }
 }
 
@@ -126,7 +130,8 @@ function start_transaction(){
         $.ajax({
             type: "POST",
             url: "php/make_order.php",
-            data: { activitiesArray: ordered, shopName: `${current_shop}`, deliveryFee: delivery_fee },
+            data: { activitiesArray: ordered, shopName: `${current_shop}`, 
+                deliveryFee: delivery_fee, deliveryType: delivery_type_global },
             success: function(results) {
                  alert(results);
                  location.reload();

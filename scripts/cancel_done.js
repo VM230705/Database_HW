@@ -1,4 +1,6 @@
 function cancel_done(request){
+    var shopname = document.getElementById("status_shop_order").getAttribute("name");
+    console.log("shopname = ", shopname);
     var OID = request.getAttribute("name");
     var ele_id = request.getAttribute("id");
     var data = new FormData();
@@ -24,6 +26,7 @@ function cancel_done(request){
     data.append("OID", OID);
     data.append("ele_id", ele_id);
     data.append("start", start_value);
+    data.append("shopname", shopname);
 
     var xhr = new XMLHttpRequest();
     if(confirm('Are you sure you want to update it?') == false){

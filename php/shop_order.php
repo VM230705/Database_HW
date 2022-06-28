@@ -49,7 +49,7 @@ try{
             $distance = $row['distance'];
 
             $delivery_fee = $distance * 10;
-            if($delivery_fee < 10){
+            if($delivery_fee < 10 && $distance!=0){
                 $delivery_fee = 10;
             }
             $total_price = $subtotal + $delivery_fee;

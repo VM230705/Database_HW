@@ -10,6 +10,7 @@ try{
     $ordered = $_REQUEST['activitiesArray'];
     $shop_name = $_REQUEST['shopName'];
     $delivery_fee = $_REQUEST['deliveryFee'];
+    $delivery_type = $_REQUEST['deliveryType'];
     $current_oid = 0;
     $current_tid = 0;
     $account = $_SESSION["account"];
@@ -70,6 +71,11 @@ try{
     $stmt->execute(array('longitude'=>$longitude, 'latitude'=>$latitude, 'shopname'=>$shop_name));
     $row = $stmt->fetch();
     $distance = $row['distance'];
+
+    // pick up distance == 0
+    if ($delivery_type == 'pick-up'){
+        $distance = 0;
+    }
 
     // Insert i_order with increment id
     foreach ($ordered as $meal) {
