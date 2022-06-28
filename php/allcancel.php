@@ -75,22 +75,22 @@
             }
 
             //take money away from shopkeeper
-            $sql = "SELECT account from shop where shopname =:shopname";
-            $stmt=$conn->prepare($sql);
-            $stmt->execute(array('shopname'=>$shopname));
-            foreach($stmt as $rows){
-                $shop_account = $rows['account'];
-            }
-            $sql = "select balance from user where account =:account";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute(array('account'=>$shop_account));
-            foreach($stmt as $rows){
-                $balance=$rows['balance'];
-                $newbalance = $balance-$total;
-                $sql = "UPDATE user SET balance=$newbalance where account =:account";
-                $stmt1 = $conn->prepare($sql);
-                $stmt1->execute(array('account'=>$shop_account));
-            }
+            // $sql = "SELECT account from shop where shopname =:shopname";
+            // $stmt=$conn->prepare($sql);
+            // $stmt->execute(array('shopname'=>$shopname));
+            // foreach($stmt as $rows){
+            //     $shop_account = $rows['account'];
+            // }
+            // $sql = "select balance from user where account =:account";
+            // $stmt = $conn->prepare($sql);
+            // $stmt->execute(array('account'=>$shop_account));
+            // foreach($stmt as $rows){
+            //     $balance=$rows['balance'];
+            //     $newbalance = $balance-$total;
+            //     $sql = "UPDATE user SET balance=$newbalance where account =:account";
+            //     $stmt1 = $conn->prepare($sql);
+            //     $stmt1->execute(array('account'=>$shop_account));
+            // }
             
 
             // generate user's record
@@ -102,12 +102,12 @@
             $stmt->execute($datas);
 
             // generate shopkeeper's record
-            $sql = "SELECT account from shop where shopname =:shopname";
-            $stmt=$conn->prepare($sql);
-            $stmt->execute(array('shopname'=>$shopname));
-            foreach($stmt as $rows){
-                $shop_account = $rows['account'];
-            }
+            // $sql = "SELECT account from shop where shopname =:shopname";
+            // $stmt=$conn->prepare($sql);
+            // $stmt->execute(array('shopname'=>$shopname));
+            // foreach($stmt as $rows){
+            //     $shop_account = $rows['account'];
+            // }
 
             $sql = "
             INSERT INTO transaction (OID, account, shopname, price, time, Type)
