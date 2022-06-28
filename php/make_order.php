@@ -14,7 +14,7 @@ try{
     $current_oid = 0;
     $current_tid = 0;
     $account = $_SESSION["account"];
-    $time = date('Y-m-d h:i:s', time());
+    // $time = date('Y-m-d h:i:s', time());
 
     $conn = require_once "../db_account/config.php";
 
@@ -50,9 +50,9 @@ try{
     $total_price += $delivery_fee;
     $sql = "
         INSERT INTO transaction (TID, OID, account, shopname, price, time, type)
-        VALUES (:TID, :OID, :account, :shopname, :price, :time, :type)";
+        VALUES (:TID, :OID, :account, :shopname, :price, current_timestamp(), :type)";
     $stmt = $conn->prepare($sql);
-    $datas = [':TID'=>$current_tid, ':OID'=>$current_oid, ':account'=>$account, ':shopname'=>$shop_name, ':price'=>$total_price, ':time'=>$time, ':type'=>'Payment'];
+    $datas = [':TID'=>$current_tid, ':OID'=>$current_oid, ':account'=>$account, ':shopname'=>$shop_name, ':price'=>$total_price, ':type'=>'Payment'];
     $stmt->execute($datas);
     // echo "$current_tid, $current_oid, $account, $shop_name, $total_price, $time"; // test
 
