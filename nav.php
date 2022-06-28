@@ -174,6 +174,9 @@
   <script type="text/javascript" src="scripts/cancel_done.js"></script>
   <script type="text/javascript" src="scripts/multiple_cancel.js"></script>
   <script type="text/javascript" src="scripts/multiple_done.js"></script>
+  <script type="text/javascript" src="scripts/refresh_wallet.js"></script>
+
+
 
   <title>Hello, world!</title>
 </head>
@@ -192,7 +195,7 @@
   <div class="container" id="container">
 
     <ul class="nav nav-tabs">
-      <li class="active"><a href="#home" onclick="">Home</a></li>
+      <li class="active"><a href="#home" onclick="refresh_wallet()">Home</a></li>
       <li><a href="#menu1" onclick="">shop</a></li>
       <li><a href="#menu2" onclick="choose_order()">My Order</a></li>
       <li><a href="#menu3" onclick="shop_order('<?php echo $shopname_order ?>')">Shop Order</a></li>

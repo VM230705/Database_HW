@@ -10,8 +10,12 @@
         exit();
     }
 
-
+try{
     $conn = require "../db_account/config.php";
+
+    // Start Transaction
+    $conn->beginTransaction();
+
     $OID = $_REQUEST['OID'];
     $sql = "select account,shopname,subtotal,distance,status from i_order where OID =:OID";
     $stmt = $conn->prepare($sql);
@@ -113,13 +117,25 @@
             INSERT INTO transaction (OID, account, shopname, price, time, Type)
             VALUES (:OID, :account, :shopname, :price, current_timestamp(), :type)";
             $stmt = $conn->prepare($sql);
-            $datas = [':OID'=>$OID, 'account'=>$shop_account, 'shopname'=>$account, 'price'=>-$total, 'type'=>'Collection'];
+            $datas = [':OID'=>$OID, 'account'=>$shop_account, 'shopname'=>$account, 'price'=>$total, 'type'=>'Collection'];
             $stmt->execute($datas);
             
+            $conn->commit();
         
         }else{
+            $conn->commit();
             echo "Done Failed";
         }
+
+
+}
+catch (Exception $e){
+    if ($conn->inTransaction())
+        $conn->rollback();
+    $msg = $e->getMessage();
+    echo "$msg";
+}
+   
     
     
 
