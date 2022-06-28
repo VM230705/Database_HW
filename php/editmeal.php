@@ -25,12 +25,37 @@
     $o_stmt->execute();
     $o_result = $o_stmt->get_result();
     if($o_result->num_rows > 0){
-        die("
-        <script>
-            if(confirm('Cannot Update!! Because there exists unfinished order containing this meal!!') == true){
-                location.href = '../nav.php';
+        // $row = $o_result->fetch_assoc();
+        $mealquery = "SELECT price, quantity, mealname FROM meal WHERE shopname = ? and mealname = ?";
+        $m_stmt = $conn->prepare($mealquery);   // avoid sql injection
+        $m_stmt->bind_param("ss", $shopname, $mealname);  // 's' specifies the variable type => 'string'
+        $m_stmt->execute();
+        $m_result = $m_stmt->get_result();
+        if($m_result->num_rows > 0){
+            $row = $m_result->fetch_assoc();
+
+            // 設定只能增加quantity
+            if($price == $row['price'] && $quantity > $row['quantity'] && $mealname == $row['mealname']){
+                echo "ok";
             }
-        </script>");
+            else{
+                die("
+                <script>
+                    if(confirm('Cannot Update!!! Because there exists unfinished order containing this meal!!') == true){
+                        location.href = '../nav.php';
+                    }
+                </script>");
+            }      
+        }
+        else{
+            die("
+            <script>
+                if(confirm('Can't find meal!!') == true){
+                    location.href = '../nav.php';
+                }
+            </script>");
+        }      
+        
     }
     // if($o_stmt->num_rows>0){ 
     //     while($meal = $o_stmt->fetch_assoc()){

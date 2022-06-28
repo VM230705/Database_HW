@@ -133,8 +133,8 @@ function start_transaction(){
             data: { activitiesArray: ordered, shopName: `${current_shop}`, 
                 deliveryFee: delivery_fee, deliveryType: delivery_type_global },
             success: function(results) {
-                 alert(results);
-                 location.reload();
+                alert(results);
+                location.reload();
             }
         });
     }

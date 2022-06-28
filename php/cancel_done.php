@@ -48,7 +48,7 @@
             $quantity = $o_meal['quantity'];
             $subtotal = $o_meal['subtotal'];
             $o_account = $o_meal['account'];
-            $delivery_fee = $o_meal['distance'] * 10;
+            $delivery_fee = intval($o_meal['distance'] / 100);
             $total_price += $subtotal;
         }
         if($delivery_fee < 10 && $delivery_fee!=0){
@@ -60,22 +60,24 @@
     }
     else if($ele_id == $OID."_done"){
         // check meal exist and quantity enough
+        // 後來用禁止修改或刪除餐點當有訂單包含該餐點未完成
         $action = "done";
 
         foreach($order_meal as $o_meal){
             $mealname = $o_meal['mealname'];
             $quantity = $o_meal['quantity'];
             $subtotal = $o_meal['subtotal'];
-            $delivery_fee = $o_meal['distance'] * 10;
+            $delivery_fee = intval($o_meal['distance'] / 100);
             $o_account = $o_meal['account'];
             $mealquery = "SELECT price, quantity, mealname FROM meal WHERE shopname = '$shopname' and mealname = '$mealname'";
             $m_stmt = $conn->query($mealquery);
             if($o_stmt->num_rows>0){ 
-                while($meal = $m_stmt->fetch_assoc()){
-                    if($quantity > $meal['quantity']){
-                        die("Quantity of ".$mealname." isn't enough.");
-                    }
-                }
+                // insert order時就扣過了
+                // while($meal = $m_stmt->fetch_assoc()){
+                //     if($quantity > $meal['quantity']){
+                //         die("Quantity of ".$mealname." isn't enough.");
+                //     }
+                // }
             }
             else{
                 die($mealname." is no longer exist.");

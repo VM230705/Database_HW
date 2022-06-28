@@ -48,7 +48,7 @@ try{
             $num = $row['num'];
             $distance = $row['distance'];
 
-            $delivery_fee = $distance * 10;
+            $delivery_fee = intval($distance / 100);
             if($delivery_fee < 10 && $distance!=0){
                 $delivery_fee = 10;
             }
