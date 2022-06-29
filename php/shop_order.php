@@ -80,9 +80,9 @@ try{
 
             if(is_null($row['end'])){
                 $btn =  "<td id='done_$OID'><button id='".$OID."_done' name='$OID' type='button' 
-                        class='btn btn-info' style='background-color: #4CAF50;' onclick='cancel_done(this)'>Done</button></td>
+                        class='btn btn-info' style='background-color: #4CAF50;' onclick='shop_done(this)'>Done</button></td>
                     <td id='cancel_$OID'><button id='".$OID."_cancel' name='$OID' type='button' 
-                        class='btn btn-info' style='background-color: #f44336;' onclick='cancel_done(this)'>Cancel</button></td>
+                        class='btn btn-info' style='background-color: #f44336;' onclick='shop_cancel(this)'>Cancel</button></td>
                     
                     ";
                 $append = $append . $btn;

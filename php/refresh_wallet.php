@@ -8,7 +8,7 @@ if (!isset($_SESSION['account']) || $_SESSION['logged'] != true){
 
 // Process and return if the registeration is success
 $account = $_SESSION['account'];
-$password = $_SESSION['password'];
+// $password = $_SESSION['password'];
 
 // connect to database
 $conn = require_once "../db_account/config.php";

@@ -135,7 +135,7 @@
     $shop_order_name = $shop_order_paramter->fetch_assoc();
     $shopname_order = $shop_order_name['shopname'];;
   }
-?>
+ ?>
 <!doctype html>
 <html lang="en">
 
@@ -171,7 +171,8 @@
   <script src="scripts/allcancel.js"></script>
   <!-- shop order cancel/done -->
   <script type="text/javascript" src="scripts/shop_order.js"></script>
-  <script type="text/javascript" src="scripts/cancel_done.js"></script>
+  <script type="text/javascript" src="scripts/shop_cancel.js"></script>
+  <script type="text/javascript" src="scripts/shop_done.js"></script>
   <script type="text/javascript" src="scripts/multiple_cancel.js"></script>
   <script type="text/javascript" src="scripts/multiple_done.js"></script>
   <script type="text/javascript" src="scripts/refresh_wallet.js"></script>
@@ -198,7 +199,7 @@
       <li class="active"><a href="#home" onclick="refresh_wallet()">Home</a></li>
       <li><a href="#menu1" onclick="">shop</a></li>
       <li><a href="#menu2" onclick="choose_order()">My Order</a></li>
-      <li><a href="#menu3" onclick="shop_order('<?php echo $shopname_order ?>')">Shop Order</a></li>
+      <li><a href="#menu3" onclick="shop_order('<?php echo $shopname_order  ?>')">Shop Order</a></li>
       <li><a href="#menu4" onclick="transaction_record()">Transaction Record</a></li>
 
 
@@ -270,7 +271,7 @@
              -->
              <h3>Search</h3>
         <div class=" row  col-xs-8" id="hide2">
-          <form class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" name="search">
+          <form class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);  ?>" method="post" name="search">
             <div class="form-group">
               <label class="control-label col-sm-1" for="Shop">Shop</label>
               <div class="col-sm-5">
@@ -628,7 +629,7 @@
                 usort($stores,fn($a,$b)=>$a['distance']>$b['distance']);
               }
               
-          ?>
+           ?>
         <!-- </div> -->
         
 
@@ -671,7 +672,7 @@
                       echo "</tr>";
                       $temp ++;
                     }
-                  ?>
+                   ?>
                   
                 
                   <!-- <td>near </td> -->
@@ -759,7 +760,7 @@
       </div>
     </div>';
     }
-?>
+ ?>
 <!-- Check order information -->
 <div>
   <div id="check-order-info" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static">
@@ -823,7 +824,7 @@ if($page<$pages){
   echo " <a href=?page=".($page+1).">next page</a><br /><br />";
 } 
 
-?>
+ ?>
 
       </div>
     </div>
@@ -832,7 +833,7 @@ if($page<$pages){
   <!--Shop Area-->
   <div id="menu1" class="tab-pane fade">
         <!--import script tag to check sql by php-->
-      <?php require 'php/db_config.php'; ?>
+      <?php require 'php/db_config.php';  ?>
         <!--Register Shop-->
       <form onsubmit="return register_shop()">
         <h3> Start a business </h3>
@@ -873,10 +874,10 @@ if($page<$pages){
             if($have_shop->num_rows>0){ 
               $shop_profile = $have_shop->fetch_assoc();
               $shopname = $shop_profile['shopname'];;
-              ?>
+               ?>
           <h3>Shop Profile</h3>
-          <p id="show_shop"><?php echo "Shop name: ".$shopname."<br/>Location: ".$shop_profile['location']."<br/>Category: ".$shop_profile['category'];?></p>          
-          <?php } ?>
+          <p id="show_shop"><?php echo "Shop name: ".$shopname."<br/>Location: ".$shop_profile['location']."<br/>Category: ".$shop_profile['category']; ?></p>          
+          <?php }  ?>
         </div>
         <!--Add Meal-->
         <div id="add_container">
@@ -912,7 +913,7 @@ if($page<$pages){
               <hr>
             </div>
             <div class=" col-xs-3">
-              <input type="hidden" name="shopname" value="<?php echo $shopname ?>">
+              <input type="hidden" name="shopname" value="<?php echo $shopname  ?>">
               <input style=" margin-top: 15px;" type="submit" class="btn btn-primary" id="add_btn" name="add_btn" value="Add">
             </div>
 
@@ -940,29 +941,27 @@ if($page<$pages){
               <?php 
               $result = $conn->query("SELECT * FROM meal where shopname = '$shopname'");
               $count = 0;
-              ?>
-              <?php if($result->num_rows > 0){ ?> 
+               ?>
+              <?php if($result->num_rows > 0){  ?> 
                 <tr>
                 
                 
                 <?php while($row = $result->fetch_assoc()){ 
                           $count = $count + 1;
-                ?> 
-                  <th scope="row"><?php echo $count;?></th>
-                  <td><img src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($row['picture']); ?>"  style = "width:40%;" with="50" heigh="10" alt="<?php echo $row['mealname']?>"></td>
-                  <td><?php echo $row['mealname']?></td>
-                  <td><?php echo $row['price']?> </td>
-                  <td><?php echo $row['quantity']?></td>
-                  <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#<?php echo $row['mealname']?>-1">
-                    Edit
-                    </button></td>
+                 ?> 
+                  <th scope="row"><?php echo $count; ?></th>
+                  <td><img src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($row['picture']); ?>"  style = "width:40%;" with="50" heigh="10" alt="<?php echo $row['mealname'] ?>"></td>
+                  <td><?php echo $row['mealname'] ?></td>
+                  <td><?php echo $row['price'] ?> </td>
+                  <td><?php echo $row['quantity'] ?></td>
+                  <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#<?php echo $count ?>meal_modal">Edit</button></td>
                     <!-- Modal -->
-                    <form class="editform" action="php/editmeal.php" method="post" name="<?php echo $row['mealname']?>">
-                        <div class="modal fade" id="<?php echo $row['mealname']?>-1" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <form class="editform" action="php/editmeal.php" method="post" name="<?php echo $count ?>meal" >
+                        <div class="modal fade" id="<?php echo $count ?>meal_modal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                           <div class="modal-dialog" role="document">
                             <div class="modal-content">
                               <div class="modal-header">
-                                <h5 class="modal-title" id="staticBackdropLabel-<?php echo $count?>"><?php echo $row['mealname']?> Edit</h5>
+                                <h5 class="modal-title" id="staticBackdropLabel-<?php echo $count ?>"><?php echo $row['mealname'] ?> Edit</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                   <span aria-hidden="true">&times;</span>
                                 </button>
@@ -970,34 +969,34 @@ if($page<$pages){
 
                               
                               <div class="modal-body">
-                                <input type="hidden" id="<?php echo $row['mealname']?>" value="<?php echo $row['mealname']?>" name="mealname">
-                                <input type="hidden" id="<?php echo $row['shopname']?>" value="<?php echo $row['shopname']?>" name="shopname">
+                                <input type="hidden" id="<?php echo $row['mealname'] ?>" value="<?php echo $row['mealname'] ?>" name="mealname">
+                                <input type="hidden" id="<?php echo $row['shopname'] ?>" value="<?php echo $row['shopname'] ?>" name="shopname">
                                 <div class="row" >
                                   <div class="col-xs-6">
-                                    <label for="price-<?php echo $row['mealname']?>"><?php echo $row['price']?></label>
-                                    <input class="form-control" id="price-<?php echo $row['mealname']?>" type="number" name="price">
+                                    <label for="price-<?php echo $row['mealname'] ?>"><?php echo $row['price'] ?></label>
+                                    <input class="form-control" id="price-<?php echo $row['mealname'] ?>" type="number" name="price">
                                   </div>
                                   <div class="col-xs-6">
-                                    <label for="quabtity-<?php echo $row['mealname']?>"><?php echo $row['quantity']?></label>
-                                    <input class="form-control" id="quantity-<?php echo $row['mealname']?>" type="number" name="quantity">
+                                    <label for="quabtity-<?php echo $row['mealname'] ?>"><?php echo $row['quantity'] ?></label>
+                                    <input class="form-control" id="quantity-<?php echo $row['mealname'] ?>" type="number" name="quantity">
                                   </div>
                                 </div>
                       
                               </div>
                               <div class="modal-footer">
-                                <button id="<?php echo $row['mealname']?>_edit" name="<?php echo $row['mealname']?>" type="button" class="btn btn-secondary" data-dismiss="modal" onclick="edit_form_submit(this)">Edit</button>
+                                <button id="<?php echo $row['mealname'] ?>_edit" name="<?php echo $count ?>meal" type="button" class="btn btn-secondary" data-dismiss="modal" onclick="edit_form_submit(this)">Edit</button>
 
                               </div>
                             </div>
                           </div>
                         </div>
                     </form>
-                  <td><button id="<?php echo $row['mealname']?>_del" name="<?php echo $row['mealname']?>" type="button" class="btn btn-danger" onclick="delete_meal(this)">Delete</button></td>
+                  <td><button id="<?php echo $row['mealname'] ?>_del" name="<?php echo $row['mealname'] ?>" type="button" class="btn btn-danger" onclick="delete_meal(this)">Delete</button></td>
                 </tr>
-                <?php } ?> 
-              <?php }else{ ?> 
+                <?php }  ?> 
+              <?php }else{  ?> 
                   <p class="status error">Image(s) not found...</p> 
-              <?php } ?>
+              <?php }  ?>
               </tbody>
             </table>
           </div>
@@ -1097,7 +1096,7 @@ if($page<$pages){
                     }
                   }
                  
-                ?>
+                 ?>
           <!-- </tbody> -->
             </table>
             <input type="submit" class="btn btn-danger" id = "cancel" value="ALL Cancel" onclick="allcancel()">
@@ -1199,7 +1198,7 @@ if($page<$pages){
               </div>
               EOT;
             }
-          ?>
+           ?>
             
 
               <!-- Modal -->
@@ -1211,7 +1210,7 @@ if($page<$pages){
         <br/>
         <label class="control-label col-sm-1" for="status_shop_order" >Status</label>
         <div class="col-sm-5">
-          <select class="form-control" id="status_shop_order" name="<?php echo $shopname ?>" onchange="shop_order(this.getAttribute('name'));" onfocus="this.selectedIndex = -1;">
+          <select class="form-control" id="status_shop_order" name="<?php echo $shopname  ?>" onchange="shop_order(this.getAttribute('name'));" onfocus="this.selectedIndex = -1;">
             <option>ALL</option>
             <option>Finished</option>
             <option>Not Finished</option>
@@ -1288,13 +1287,13 @@ if($page<$pages){
       });
     });
     // function for submit edit meal form 
-    function edit_form_submit(edit_btn_id) {
-      var mealname = edit_btn_id.getAttribute("name");
+    function edit_form_submit(edit_btn) {
+      var mealnum = edit_btn.getAttribute("name"); // 1meal , 2meal
       var edit_form = document.getElementsByClassName("editform"); 
-      console.log(mealname);
+      console.log(mealnum);
       console.log(edit_form);
       for (var i=0; i<edit_form.length; i++) {
-        if(edit_form[i].getAttribute("name") == mealname){
+        if(edit_form[i].getAttribute("name") == mealnum){
           edit_form[i].submit();
           break;
         }
@@ -1302,7 +1301,7 @@ if($page<$pages){
     }    
     function delete_meal(del_btn_id){
       var mealname = del_btn_id.getAttribute("name");
-      var shopname = '<?php echo $shopname ?>';
+      var shopname = '<?php if($have_shop->num_rows >0){ echo $shopname ;}  ?>';
       var data = new FormData();
       console.log("shopname = ", shopname);
       data.append("mealname", mealname);
@@ -1362,7 +1361,7 @@ else{
         document.getElementById('add_container').style.visibility = 'hidden';      // Hide
         </script>";
 }
-?>
+ ?>
 
 
   <!-- Option 2: Separate Popper and Bootstrap JS -->
